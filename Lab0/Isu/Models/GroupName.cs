@@ -1,3 +1,14 @@
 namespace Isu.Models;
 
-public class GroupName { }
+public class GroupName
+{
+    // private string _name;
+    //
+    // public string Name
+    // {
+    //     get => _name;
+    //     set
+    //     {
+    //     }
+    // }
+}
