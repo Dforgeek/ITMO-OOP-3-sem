@@ -1,15 +1,17 @@
+using System.Security.Cryptography;
+using Isu.Models;
+
 namespace Isu.Entities;
 
 public class Student
 {
-    // private int serialNum;
-    //
-    // public int SerialNum
-    // {
-    //     get => serialNum;
-    //     set
-    //     {
-    //         if ()
-    //     }
-    // }
+    public Student(string name)
+    {
+        Name = name;
+        Id = NumberFactory.GetNewNumber(); // group
+    }
+
+    public string Name { get; }
+
+    public int Id { get; }
 }

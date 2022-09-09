@@ -1,3 +1,5 @@
+using Isu.Exceptions;
+
 namespace Isu.Models;
 
 public class CourseNumber
@@ -16,10 +18,10 @@ public class CourseNumber
     {
         get => _courseNum;
 
-        set
+        private set
         {
             if (value < MinCourse || value > MaxCourse)
-                throw new Exception("Incorrect course number");
+                throw new IsuException("Invalid course number");
             _courseNum = value;
         }
     }
