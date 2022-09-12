@@ -5,10 +5,12 @@ namespace Isu.Entities;
 
 public class Student
 {
-    public Student(string name)
+    private Group _group;
+    public Student(string name, Group group)
     {
         Name = name;
         Id = NumberFactory.GetNewNumber(); // group
+        _group = group;
     }
 
     public string Name { get; }

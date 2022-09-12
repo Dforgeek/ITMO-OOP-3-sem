@@ -2,15 +2,30 @@ using Isu.Exceptions;
 
 namespace Isu.Models;
 
+public enum Degree
+{
+    Bachelor,
+    Postgraduate,
+    Magistracy,
+}
+
 public class CourseNumber
 {
-    private const int MaxCourse = 4;
     private const int MinCourse = 1;
 
-    private int _courseNum;
-
-    public CourseNumber(int num)
+    private static Dictionary<Degree, int> _degreeMaxCourse = new Dictionary<Degree, int>()
     {
+        { Degree.Bachelor, 4 },
+        { Degree.Magistracy, 2 },
+        { Degree.Postgraduate, 3 },
+    };
+
+    private int _courseNum;
+    private Degree _degree;
+
+    public CourseNumber(Degree degree, int num)
+    {
+        _degree = degree;
         CourseNum = num;
     }
 
@@ -20,7 +35,7 @@ public class CourseNumber
 
         private set
         {
-            if (value < MinCourse || value > MaxCourse)
+            if (value < MinCourse || value > _degreeMaxCourse[_degree])
                 throw new IsuException("Invalid course number");
             _courseNum = value;
         }
