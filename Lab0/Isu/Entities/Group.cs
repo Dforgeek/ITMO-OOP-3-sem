@@ -21,18 +21,14 @@ public class Group
         NumberOfCourse = new CourseNumber(groupName);
     }
 
-    public GroupName? GroupNameValue
-    {
-        get;
-    }
+    public GroupName? GroupNameValue { get; }
 
     public CourseNumber NumberOfCourse { get; }
 
-    public List<Student> Students
+    private IReadOnlyList<Student> Students
     {
         get => _students;
-
-        private set
+        init
         {
             if (value.Count > MaxAmountOfStudents)
             {
