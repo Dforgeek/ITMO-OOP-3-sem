@@ -29,6 +29,12 @@ public class CourseNumber
         CourseNum = num;
     }
 
+    public CourseNumber(GroupName groupName)
+    {
+        _degree = groupName.GetDegree();
+        CourseNum = groupName.GetCourseNum();
+    }
+
     public int CourseNum
     {
         get => _courseNum;
@@ -39,5 +45,10 @@ public class CourseNumber
                 throw new IsuException("Invalid course number");
             _courseNum = value;
         }
+    }
+
+    public Degree GetDegree()
+    {
+        return _degree;
     }
 }
