@@ -11,23 +11,23 @@ public class Group
     public Group(GroupName groupName)
     {
         GroupNameValue = new GroupName(groupName);
-        NumberOfCourse = new CourseNumber(groupName);
+        CourseNumberValue = new CourseNumber(groupName);
     }
 
     public Group(GroupName groupName, List<Student> students)
     {
         Students = new List<Student>(students);
         GroupNameValue = new GroupName(groupName);
-        NumberOfCourse = new CourseNumber(groupName);
+        CourseNumberValue = new CourseNumber(groupName);
     }
 
-    public GroupName? GroupNameValue { get; }
+    public GroupName GroupNameValue { get; private init; }
 
-    public CourseNumber NumberOfCourse { get; }
+    public CourseNumber CourseNumberValue { get; private init; }
 
-    private IReadOnlyList<Student> Students
+    public List<Student> Students
     {
-        get => _students;
+        get => new List<Student>(_students);
         init
         {
             if (value.Count > MaxAmountOfStudents)
@@ -54,5 +54,10 @@ public class Group
         }
 
         _students.Remove(oldStudent);
+    }
+
+    public Student? GetStudent(int id)
+    {
+        return _students.FirstOrDefault(student => student.Id == id);
     }
 }
