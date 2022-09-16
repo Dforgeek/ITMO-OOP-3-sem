@@ -6,42 +6,32 @@ namespace Isu.Entities;
 public class Group
 {
     private const int MaxAmountOfStudents = 30;
-    private List<Student> _students = new List<Student>();
+    private readonly List<Student> _students = new ();
 
     public Group(GroupName groupName)
     {
-        GroupNameValue = new GroupName(groupName);
-        CourseNumberValue = new CourseNumber(groupName);
+        GroupName = groupName;
+        CourseNumber = groupName.CourseNumber;
     }
 
     public Group(GroupName groupName, List<Student> students)
     {
-        Students = new List<Student>(students);
-        GroupNameValue = new GroupName(groupName);
-        CourseNumberValue = new CourseNumber(groupName);
+        if (students.Count > MaxAmountOfStudents)
+            throw new IsuException("Limit of students exceeded");
+        _students = new List<Student>(students);
+        GroupName = groupName;
+        CourseNumber = groupName.CourseNumber;
     }
 
-    public GroupName GroupNameValue { get; private init; }
+    public GroupName GroupName { get; }
 
-    public CourseNumber CourseNumberValue { get; private init; }
+    public CourseNumber CourseNumber { get; }
 
-    public List<Student> Students
-    {
-        get => new List<Student>(_students);
-        init
-        {
-            if (value.Count > MaxAmountOfStudents)
-            {
-                throw new IsuException("Student limit exceeded");
-            }
-
-            _students = new List<Student>(value);
-        }
-    }
+    public IReadOnlyCollection<Student> Students => _students.AsReadOnly();
 
     public void AddStudent(Student newStudent)
     {
-        if (_students.Count + 1 > MaxAmountOfStudents)
+        if (_students.Count == MaxAmountOfStudents)
             throw new IsuException("Student limit exceeded");
         _students.Add(newStudent);
     }
@@ -56,8 +46,15 @@ public class Group
         _students.Remove(oldStudent);
     }
 
-    public Student? GetStudent(int id)
+    public override bool Equals(object? obj)
     {
-        return _students.FirstOrDefault(student => student.Id == id);
+        if (obj is Group group)
+            return group.GroupName.Equals(GroupName);
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_students, GroupName, CourseNumber);
     }
 }

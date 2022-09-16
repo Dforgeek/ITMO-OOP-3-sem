@@ -2,7 +2,7 @@
 
 public class NumberFactory
 {
-    private static int _studentsCnt = 0;
+    private static int _studentsCnt = 1;
 
     public static int GetNewNumber()
     {

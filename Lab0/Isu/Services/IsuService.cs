@@ -6,14 +6,22 @@ namespace Isu.Services;
 
 public class IsuService : IIsuService
 {
-    private Dictionary<GroupName, Group> _groups = new Dictionary<GroupName, Group>();
+    private List<Group> _groups;
 
-    public IsuService() { }
+    public IsuService()
+    {
+        _groups = new List<Group>();
+    }
 
     public Group AddGroup(GroupName name)
     {
+        if (_groups.Exists(group => group.GroupName.Equals(name)))
+        {
+            throw new IsuException($"Group with such name already exists: {name}");
+        }
+
         var newGroup = new Group(name);
-        _groups[name] = newGroup;
+        _groups.Add(newGroup);
         return newGroup;
     }
 
@@ -31,62 +39,50 @@ public class IsuService : IIsuService
 
     public Student GetStudent(int id)
     {
-        foreach (Student? searched in from Group @group in _groups
-                 select @group.GetStudent(id)
-                 into searched
-                 where searched != null
-                 select searched)
-        {
-            return searched;
-        }
-
-        throw new IsuException("No student with such Id in the Isu Service.");
+        return FindStudent(id)
+               ?? throw new IsuException("No student with such Id in the Isu Service.");
     }
 
     public Student? FindStudent(int id)
     {
-        return (from Group @group in _groups
-            select @group.GetStudent(id)).FirstOrDefault();
+        return _groups.SelectMany(group => group.Students).FirstOrDefault(student => student.Id == id);
     }
 
     public List<Student> FindStudents(GroupName groupName)
     {
-        return _groups[groupName].Students;
+        return FindGroup(groupName)?.Students.ToList()
+               ?? new List<Student>();
     }
 
     public List<Student> FindStudents(CourseNumber courseNumber)
     {
-        var answer = new List<Student>();
-        foreach (Group group in _groups.Values
-                     .Where(group => group.CourseNumberValue == courseNumber))
-        {
-            answer.AddRange(group.Students);
-        }
-
-        return answer;
+        return FindGroups(courseNumber).SelectMany(group => group.Students).ToList();
     }
 
     public Group? FindGroup(GroupName groupName)
     {
-        return _groups.ContainsKey(groupName) ? _groups[groupName] : null;
+        return _groups.FirstOrDefault(group => group.GroupName.Equals(groupName));
     }
 
     public List<Group> FindGroups(CourseNumber courseNumber)
     {
-        return _groups.Values
-            .Where(group => group.CourseNumberValue == courseNumber)
-            .ToList();
+        return _groups.Where(group => group.CourseNumber.Equals(courseNumber)).ToList();
     }
 
     public void ChangeStudentGroup(Student student, Group newGroup)
     {
-        Group? oldGroup = _groups.Values.FirstOrDefault(group => group.Students.Contains(student));
-        if (oldGroup == null)
+        if (!_groups.Contains(newGroup))
         {
-            throw new IsuException("This student doesn't exist");
+            throw new IsuException($"The group doesn't exist: {newGroup.GroupName}");
         }
 
-        oldGroup.DeleteStudent(student);
+        Group? oldGroup = _groups.FirstOrDefault(group => group.Students.Contains(student));
+        if (oldGroup == null)
+        {
+            throw new IsuException($"This student doesn't exist: {student.Name}");
+        }
+
         newGroup.AddStudent(student);
+        oldGroup.DeleteStudent(student);
     }
 }

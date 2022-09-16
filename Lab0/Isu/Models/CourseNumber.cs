@@ -2,53 +2,32 @@ using Isu.Exceptions;
 
 namespace Isu.Models;
 
-public enum Degree
-{
-    Bachelor,
-    Postgraduate,
-    Magistracy,
-}
-
 public class CourseNumber
 {
     private const int MinCourse = 1;
+    private const int MaxCourse = 4;
 
-    private static Dictionary<Degree, int> _degreeMaxCourse = new Dictionary<Degree, int>()
+    public CourseNumber(int num)
     {
-        { Degree.Bachelor, 4 },
-        { Degree.Magistracy, 2 },
-        { Degree.Postgraduate, 3 },
-    };
-
-    private int _courseNum;
-    private Degree _degree;
-
-    public CourseNumber(Degree degree, int num)
-    {
-        _degree = degree;
+        if (num is > MaxCourse or < MinCourse)
+            throw new IsuException("Invalid CourseNumber");
         CourseNum = num;
     }
 
-    public CourseNumber(GroupName groupName)
-    {
-        _degree = groupName.GetDegree();
-        CourseNum = groupName.GetCourseNum();
-    }
+    public int CourseNum { get; }
 
-    public int CourseNum
+    public override bool Equals(object? obj)
     {
-        get => _courseNum;
-
-        private set
+        if (obj is not CourseNumber courseNumber)
         {
-            if (value < MinCourse || value > _degreeMaxCourse[_degree])
-                throw new IsuException("Invalid course number");
-            _courseNum = value;
+            return false;
         }
+
+        return CourseNum == courseNumber.CourseNum;
     }
 
-    public Degree GetDegree()
+    public override int GetHashCode()
     {
-        return _degree;
+        return CourseNum.GetHashCode();
     }
 }
