@@ -13,12 +13,17 @@ public class IsuService : IIsuService
     public Group AddGroup(GroupName name)
     {
         var newGroup = new Group(name);
-        _groups[name] = new Group(name);
+        _groups[name] = newGroup;
         return newGroup;
     }
 
     public Student AddStudent(Group group, string name)
     {
+        if (group == null)
+        {
+            throw new IsuException("Group is a null reference.");
+        }
+
         var newStudent = new Student(name);
         group.AddStudent(newStudent);
         return newStudent;

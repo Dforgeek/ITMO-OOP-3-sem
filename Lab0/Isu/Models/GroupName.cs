@@ -57,9 +57,9 @@ public class GroupName
 
     public override bool Equals(object? obj)
     {
-        if (obj == null || !(obj is GroupName))
+        if (obj is not GroupName groupName)
             return false;
-        return ((GroupName)obj)._name == _name;
+        return groupName._name == _name;
     }
 
     public override int GetHashCode()
