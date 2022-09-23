@@ -19,6 +19,6 @@ public class StudentException : Exception
 
     public static StudentException IsNull()
     {
-        return new StudentException();
+        return new StudentException("Student is null.");
     }
 }

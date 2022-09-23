@@ -14,16 +14,16 @@ public class GroupException : Exception
 
     public static GroupException LimitOfStudentsExceeded()
     {
-        return new GroupException();
+        return new GroupException("Limits of students exceeded.");
     }
 
     public static GroupException IsNull()
     {
-        return new GroupException();
+        return new GroupException("Group is null.");
     }
 
     public static GroupException NoSuchStudent()
     {
-        return new GroupException("No such student in group");
+        return new GroupException("No such student in group.");
     }
 }

@@ -9,21 +9,21 @@ public class IsuException : Exception
 
     public static IsuException GroupAlreadyExists()
     {
-        return new IsuException();
+        return new IsuException("Such group already exists.");
     }
 
     public static IsuException NoStudentWithSuchId()
     {
-        return new IsuException();
+        return new IsuException("There is no student with such Id.");
     }
 
     public static IsuException NoSuchGroup()
     {
-        return new IsuException();
+        return new IsuException("There is no such group in Isu service.");
     }
 
     public static IsuException NoSuchStudent()
     {
-        return new IsuException();
+        return new IsuException("The is no such student in Isu service.");
     }
 }

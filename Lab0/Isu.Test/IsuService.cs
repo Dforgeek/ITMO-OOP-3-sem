@@ -13,7 +13,7 @@ public class IsuService
         var isu = new Services.IsuService();
         var coolGroupName = new GroupName("M3203");
         Group coolGroup = isu.AddGroup(coolGroupName);
-        var coolStudent = isu.AddStudent(coolGroup, "Michael Lopatin");
+        Student coolStudent = isu.AddStudent(coolGroup, "Michael Lopatin");
 
         Assert.Contains(coolStudent, coolGroup.Students);
     }

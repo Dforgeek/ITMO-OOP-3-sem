@@ -11,6 +11,6 @@ public class CourseNumberException : Exception
 
     public static CourseNumberException InvalidCourseNumber()
     {
-        return new CourseNumberException();
+        return new CourseNumberException("Invalid number of course.");
     }
 }
