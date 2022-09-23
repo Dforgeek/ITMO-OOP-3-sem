@@ -2,9 +2,9 @@
 
 public class NumberFactory
 {
-    private static int _studentsCnt = 1;
+    private int _studentsCnt = 1;
 
-    public static int GetNewNumber()
+    public int GetNewNumber()
     {
         return _studentsCnt++;
     }

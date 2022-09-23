@@ -2,10 +2,28 @@
 
 public class IsuException : Exception
 {
-    public IsuException() { }
+    private IsuException() { }
 
-    public IsuException(string message)
-        : base(message)
+    private IsuException(string message)
+        : base(message) { }
+
+    public static IsuException GroupAlreadyExists()
     {
+        return new IsuException();
+    }
+
+    public static IsuException NoStudentWithSuchId()
+    {
+        return new IsuException();
+    }
+
+    public static IsuException NoSuchGroup()
+    {
+        return new IsuException();
+    }
+
+    public static IsuException NoSuchStudent()
+    {
+        return new IsuException();
     }
 }
