@@ -10,7 +10,7 @@ public class CourseNumber
     public CourseNumber(int num)
     {
         if (num is > MaxCourse or < MinCourse)
-            throw new IsuException("Invalid CourseNumber");
+            throw CourseNumberException.InvalidCourseNumber();
         CourseNum = num;
     }
 

@@ -13,7 +13,7 @@ public class IsuService
         var isu = new Services.IsuService();
         var coolGroupName = new GroupName("M3203");
         Group coolGroup = isu.AddGroup(coolGroupName);
-        var coolStudent = isu.AddStudent(coolGroup, "Michael Lopatin");
+        Student coolStudent = isu.AddStudent(coolGroup, "Michael Lopatin");
 
         Assert.Contains(coolStudent, coolGroup.Students);
     }
@@ -24,7 +24,7 @@ public class IsuService
         var isu = new Services.IsuService();
         var maxStudentGroupName = new GroupName("M3204");
         Group maxStudentGroup = isu.AddGroup(maxStudentGroupName);
-        Assert.Throws<IsuException>(() =>
+        Assert.Throws<GroupException>(() =>
         {
             for (int i = 0; i < 31; i++)
             {
@@ -37,7 +37,7 @@ public class IsuService
     public void CreateGroupWithInvalidName_ThrowException()
     {
         var isu = new Services.IsuService();
-        Assert.Throws<IsuException>(() => isu.AddGroup(new GroupName("S4403")));
+        Assert.Throws<GroupNameException>(() => isu.AddGroup(new GroupName("S4403")));
     }
 
     [Fact]

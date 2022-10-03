@@ -3,7 +3,7 @@ using Isu.Models;
 
 namespace Isu.Entities;
 
-public class Group
+public class Group : IEquatable<Group>
 {
     private const int MaxAmountOfStudents = 30;
     private readonly List<Student> _students = new ();
@@ -17,7 +17,7 @@ public class Group
     public Group(GroupName groupName, List<Student> students)
     {
         if (students.Count > MaxAmountOfStudents)
-            throw new IsuException("Limit of students exceeded");
+            throw GroupException.LimitOfStudentsExceeded();
         _students = new List<Student>(students);
         GroupName = groupName;
         CourseNumber = groupName.CourseNumber;
@@ -31,30 +31,38 @@ public class Group
 
     public void AddStudent(Student newStudent)
     {
+        if (newStudent == null)
+            throw StudentException.IsNull();
         if (_students.Count == MaxAmountOfStudents)
-            throw new IsuException("Student limit exceeded");
+            throw GroupException.LimitOfStudentsExceeded();
+
         _students.Add(newStudent);
     }
 
     public void DeleteStudent(Student oldStudent)
     {
-        if (!_students.Contains(oldStudent))
-        {
-            throw new IsuException("No such student to delete");
-        }
+        if (!_students.Remove(oldStudent))
+            throw GroupException.NoSuchStudent();
+    }
 
-        _students.Remove(oldStudent);
+    public bool Equals(Group? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return _students.Equals(other._students) && GroupName.Equals(other.GroupName) &&
+               CourseNumber.Equals(other.CourseNumber);
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is Group group)
-            return group.GroupName.Equals(GroupName);
-        return false;
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((Group)obj);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_students, GroupName, CourseNumber);
+        return GroupName.GetHashCode();
     }
 }

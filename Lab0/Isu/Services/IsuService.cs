@@ -6,8 +6,8 @@ namespace Isu.Services;
 
 public class IsuService : IIsuService
 {
-    private List<Group> _groups;
-
+    private readonly List<Group> _groups;
+    private readonly NumberFactory _numberFactory = new NumberFactory();
     public IsuService()
     {
         _groups = new List<Group>();
@@ -17,7 +17,7 @@ public class IsuService : IIsuService
     {
         if (_groups.Exists(group => group.GroupName.Equals(name)))
         {
-            throw new IsuException($"Group with such name already exists: {name}");
+            throw IsuException.GroupAlreadyExists();
         }
 
         var newGroup = new Group(name);
@@ -29,18 +29,20 @@ public class IsuService : IIsuService
     {
         if (group == null)
         {
-            throw new IsuException("Group is a null reference.");
+            throw GroupException.IsNull();
         }
 
-        var newStudent = new Student(name);
+        var newStudent = new Student(name, _numberFactory.GetNewNumber(), group);
         group.AddStudent(newStudent);
         return newStudent;
     }
 
     public Student GetStudent(int id)
     {
-        return FindStudent(id)
-               ?? throw new IsuException("No student with such Id in the Isu Service.");
+        Student? student = FindStudent(id);
+        if (student == null)
+            throw IsuException.NoStudentWithSuchId();
+        return student;
     }
 
     public Student? FindStudent(int id)
@@ -50,8 +52,7 @@ public class IsuService : IIsuService
 
     public List<Student> FindStudents(GroupName groupName)
     {
-        return FindGroup(groupName)?.Students.ToList()
-               ?? new List<Student>();
+        return FindGroup(groupName)?.Students.ToList() ?? new List<Student>();
     }
 
     public List<Student> FindStudents(CourseNumber courseNumber)
@@ -73,16 +74,15 @@ public class IsuService : IIsuService
     {
         if (!_groups.Contains(newGroup))
         {
-            throw new IsuException($"The group doesn't exist: {newGroup.GroupName}");
+            throw IsuException.NoSuchGroup();
         }
 
         Group? oldGroup = _groups.FirstOrDefault(group => group.Students.Contains(student));
         if (oldGroup == null)
         {
-            throw new IsuException($"This student doesn't exist: {student.Name}");
+            throw IsuException.NoSuchStudent();
         }
 
-        newGroup.AddStudent(student);
-        oldGroup.DeleteStudent(student);
+        student.ChangeGroup(newGroup);
     }
 }
