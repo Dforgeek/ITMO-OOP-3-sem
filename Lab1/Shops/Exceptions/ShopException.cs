@@ -2,8 +2,20 @@
 
 public class ShopException : Exception
 {
-    public ShopException() { }
+    private ShopException() { }
 
-    public ShopException(string message)
-        : base(message) { }
+    private ShopException(string message)
+        : base(message)
+    {
+    }
+
+    public static ShopException NameIsNullOrEmpty()
+    {
+        return new ShopException("Name of shop is null or empty");
+    }
+
+    public static ShopException AdressIsNullOrEmpty()
+    {
+        return new ShopException("Adress of shop is null or empty");
+    }
 }

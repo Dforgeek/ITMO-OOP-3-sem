@@ -3,13 +3,13 @@ using Shops.Models;
 
 namespace Shops.Entities;
 
-public class Product
+public class ShopProduct
 {
-    public Product(string name, Price price, uint quantity = 1, Guid id = default)
+    public ShopProduct(string name, Money price, uint quantity = 1, Guid id = default)
     {
         Id = id == Guid.Empty ? Guid.NewGuid() : id;
         if (string.IsNullOrEmpty(name))
-            throw new ShopException("Name consists of zero characters");
+            throw ShopProductException.IsNull();
         Name = name;
         Price = price;
         Quantity = quantity;
@@ -17,10 +17,10 @@ public class Product
 
     public Guid Id { get; }
     public string Name { get; }
-    public Price Price { get; private set; }
+    public Money Price { get; private set; }
     public uint Quantity { get; }
 
-    public void ChangePrice(Price newPrice)
+    public void ChangePrice(Money newPrice)
     {
         Price = newPrice;
     }

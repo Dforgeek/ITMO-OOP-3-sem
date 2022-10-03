@@ -2,12 +2,12 @@
 
 namespace Shops.Models;
 
-public class Price
+public record Money
 {
-    public Price(decimal price)
+    public Money(decimal price)
     {
         if (price <= 0)
-            throw new ShopException($"Invalid price: {price}");
+            throw MoneyException.MoneyNumberIsNegativeOrNull(price);
         Value = price;
     }
 
