@@ -16,8 +16,8 @@ public class Customer
     public string Name { get; }
     public Money Money { get; private set; }
 
-    public void ChangeMoneyAmount(Money newMoney)
+    public void ChangeMoneyAmount(decimal newMoney)
     {
-        Money = newMoney;
+        Money = new Money(newMoney);
     }
 }
