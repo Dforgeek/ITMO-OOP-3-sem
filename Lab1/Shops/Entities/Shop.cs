@@ -40,10 +40,13 @@ public class Shop
                 customerProduct.Quantity > GetProduct(customerProduct.Id).Quantity);
     }
 
+    public void ChangePrice(Guid productId, Money newPrice)
+    {
+        GetProduct(productId).ChangePrice(newPrice);
+    }
+
     public void ShipmentDelivery(Shipment shipment)
     {
-        if (shipment is null)
-            throw ShipmentException.IsNull();
         foreach (ShopProduct newShopProduct in shipment.ShopProducts)
         {
             ShopProduct? oldProduct = FindProduct(newShopProduct.Id);
@@ -61,22 +64,14 @@ public class Shop
 
     public Money GetSumOfOrder(Order order)
     {
-        if (order is null)
-            throw OrderException.IsNull();
-        decimal sum = order.CustomerProducts
-            .Select(product => GetProduct(product.Id))
-            .Select(shopProduct => shopProduct.Price.Value)
-            .Sum();
+        decimal sum = order
+            .CustomerProducts.Sum(product => GetProduct(product.Id).Price.Value * product.Quantity);
 
         return new Money(sum);
     }
 
     public void Buy(Customer customer, Order order)
     {
-        if (customer is null)
-            throw CustomerException.IsNull();
-        if (order is null)
-            throw OrderException.IsNull();
         if (!HasEnoughProducts(order))
             throw ShopException.NotEnoughProductQuantity();
         Money priceOfOrder = GetSumOfOrder(order);

@@ -21,8 +21,6 @@ public class Order
 
     public void AddCustomerProduct(CustomerProduct newCustomerProduct)
     {
-        if (newCustomerProduct is null)
-            throw ProductException.IsNull();
         CustomerProduct? oldProduct = FindProduct(newCustomerProduct.Id);
         oldProduct?.IncreaseQuantity(newCustomerProduct.Quantity);
 
