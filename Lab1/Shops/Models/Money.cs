@@ -11,10 +11,5 @@ public record Money
         Value = price;
     }
 
-    public decimal Value { get; private set; }
-
-    public void AddMoney(decimal newMoney)
-    {
-        Value += newMoney;
-    }
+    public decimal Value { get; }
 }

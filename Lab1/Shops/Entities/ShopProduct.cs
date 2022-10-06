@@ -3,25 +3,39 @@ using Shops.Models;
 
 namespace Shops.Entities;
 
-public class ShopProduct
+public class ShopProduct : Product
 {
-    public ShopProduct(string name, Money price, uint quantity = 1, Guid id = default)
+    public ShopProduct(Product product, Money price, uint quantity = 1)
+        : base(product.Name, product.Id)
     {
-        Id = id == Guid.Empty ? Guid.NewGuid() : id;
-        if (string.IsNullOrEmpty(name))
-            throw ShopProductException.IsNull();
-        Name = name;
         Price = price;
         Quantity = quantity;
     }
 
-    public Guid Id { get; }
-    public string Name { get; }
+    public ShopProduct(ShopProduct newShopProduct)
+        : base(newShopProduct.Name, newShopProduct.Id)
+    {
+        Price = newShopProduct.Price;
+        Quantity = newShopProduct.Quantity;
+    }
+
     public Money Price { get; private set; }
-    public uint Quantity { get; }
+    public uint Quantity { get; private set; }
 
     public void ChangePrice(Money newPrice)
     {
         Price = newPrice;
+    }
+
+    public void IncreaseQuantity(uint increaseAmount)
+    {
+        Quantity += increaseAmount;
+    }
+
+    public void DecreaseQuantity(uint decreaseAmount)
+    {
+        if (decreaseAmount > Quantity)
+            throw ProductException.DecreaseError(Quantity, decreaseAmount);
+        Quantity -= decreaseAmount;
     }
 }

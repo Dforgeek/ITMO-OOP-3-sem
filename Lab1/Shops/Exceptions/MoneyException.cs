@@ -8,7 +8,5 @@ public class MoneyException : Exception
         : base(message) { }
 
     public static MoneyException MoneyNumberIsNegativeOrNull(decimal money)
-    {
-        return new MoneyException($"Money is negative or null {money}");
-    }
+        => new MoneyException($"Money is negative or null {money}");
 }

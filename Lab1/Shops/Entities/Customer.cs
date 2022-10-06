@@ -5,19 +5,24 @@ namespace Shops.Entities;
 
 public class Customer
 {
-    public Customer(string name, decimal money)
+    public Customer(string name, Money money)
     {
         if (string.IsNullOrEmpty(name))
             throw CustomerException.IsNull();
         Name = name;
-        Money = new Money(money);
+        Money = money;
     }
 
     public string Name { get; }
     public Money Money { get; private set; }
 
-    public void ChangeMoneyAmount(decimal newMoney)
+    public void EarnMoney(Money moneyIncreaseAmount)
     {
-        Money = new Money(newMoney);
+        Money = new Money(moneyIncreaseAmount.Value + Money.Value);
+    }
+
+    public void SpendMoney(Money moneyDecreaseAmount)
+    {
+        Money = new Money(Money.Value - moneyDecreaseAmount.Value);
     }
 }
