@@ -75,6 +75,8 @@ public class Shop
         if (!HasEnoughProducts(order))
             throw ShopException.NotEnoughProductQuantity();
         Money priceOfOrder = GetSumOfOrder(order);
+        if (priceOfOrder.Value > customer.Money.Value)
+            throw ShopException.NotEnoughMoneyToPay(priceOfOrder, customer.Money);
         foreach (CustomerProduct customerProduct in order.CustomerProducts)
             DecreaseAmountOfProduct(customerProduct);
 

@@ -39,7 +39,7 @@ public class ShopManager
         Shop result = shops[0];
         shops.RemoveAt(0);
         foreach (Shop shop in shops
-                     .Where(shop => shop.GetSumOfOrder(order).Value > result.GetSumOfOrder(order).Value))
+                     .Where(shop => shop.GetSumOfOrder(order).Value < result.GetSumOfOrder(order).Value))
         {
             result = shop;
         }
