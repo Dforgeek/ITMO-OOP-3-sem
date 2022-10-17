@@ -4,21 +4,21 @@ namespace Isu.Extra.Entities;
 
 public class ElectiveModule
 {
-    private readonly List<Stream> _streams;
+    private readonly List<ElectiveGroup> _electiveGroups;
 
-    private ElectiveModule(Guid id, string name, MegaFacultyPrefix prefix, List<Stream> streams)
+    private ElectiveModule(Guid id, string name, MegaFacultyPrefix prefix, List<ElectiveGroup> electiveGroups)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new Exception();
         Name = name;
         Id = id;
         MegaFacultyPrefix = prefix;
-        _streams = streams;
+        _electiveGroups = electiveGroups;
     }
 
     public Guid Id { get; }
     public string Name { get; }
     public MegaFacultyPrefix MegaFacultyPrefix { get; }
 
-    public IReadOnlyList<Stream> Streams => _streams.AsReadOnly();
+    public IReadOnlyList<ElectiveGroup> ElectiveGroups => _electiveGroups.AsReadOnly();
 }

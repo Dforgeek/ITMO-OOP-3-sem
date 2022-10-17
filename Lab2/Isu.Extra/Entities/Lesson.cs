@@ -1,32 +1,34 @@
 ﻿using System.Text.RegularExpressions;
+using System.Xml;
 using Isu.Models;
 
 namespace Isu.Extra.Entities;
 
 public class Lesson
 {
-    private const int MinNumOfLesson = 1;
-    private const int MaxNumOfLesson = 7;
     private const int MinDayOfLesson = 1;
     private const int MaxDayOfLesson = 7;
+    private readonly TimeOnly _minTime = new (5, 0, 0);
+    private readonly TimeOnly _maxTime = new (23, 0, 0);
 
-    public Lesson(int numOfLesson, int dayOfLesson, Teacher teacher, DecoratorGroup group)
+    public Lesson(TimeOnly startTime, int dayOfLesson, Teacher teacher, ExtraGroup group)
     {
-        if (!ValidateNumOfLessonAndDayOfLesson(numOfLesson, dayOfLesson))
+        if (!ValidateNumOfLessonAndDayOfLesson(startTime, dayOfLesson))
             throw new Exception();
-        NumOfLesson = numOfLesson;
+        StartingTimeOfLesson = startTime;
         DayOfLesson = dayOfLesson;
         Teacher = teacher;
         Group = group;
     }
 
-    public int NumOfLesson { get; }
+    public TimeOnly StartingTimeOfLesson { get; }
     public int DayOfLesson { get; }
     public Teacher Teacher { get; }
-    public DecoratorGroup Group { get; }
-    private bool ValidateNumOfLessonAndDayOfLesson(int numOfLesson, int dayOfLesson)
+    public ExtraGroup Group { get; }
+
+    private bool ValidateNumOfLessonAndDayOfLesson(TimeOnly startTime, int dayOfLesson)
     {
-        return numOfLesson is <= MaxNumOfLesson and >= MinNumOfLesson &&
+        return startTime <= _maxTime && startTime >= _minTime &&
                dayOfLesson is <= MaxDayOfLesson and >= MinDayOfLesson;
     }
 }

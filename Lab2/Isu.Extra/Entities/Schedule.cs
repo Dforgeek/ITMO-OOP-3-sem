@@ -3,11 +3,11 @@ using Isu;
 
 namespace Isu.Extra.Entities;
 
-public class Shedule
+public class Schedule
 {
     private readonly List<Lesson> _lessons;
 
-    private Shedule(List<Lesson> lessons)
+    private Schedule(List<Lesson> lessons)
     {
         _lessons = lessons;
     }
@@ -32,16 +32,16 @@ public class Shedule
             _lessons.Add(lesson);
         }
 
-        public Shedule Build()
+        public Schedule Build()
         {
-            return new Shedule(_lessons);
+            return new Schedule(_lessons);
         }
 
         public bool ValidateLesson(Lesson newLesson)
         {
             return _lessons.All(lesson =>
                 lesson.DayOfLesson != newLesson.DayOfLesson ||
-                lesson.NumOfLesson != newLesson.NumOfLesson);
+                lesson.StartingTimeOfLesson != newLesson.StartingTimeOfLesson);
         }
     }
 }

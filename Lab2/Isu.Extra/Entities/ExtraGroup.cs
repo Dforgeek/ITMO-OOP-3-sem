@@ -3,16 +3,16 @@ using Isu.Extra.Tools;
 
 namespace Isu.Extra.Entities;
 
-public class DecoratorGroup
+public class ExtraGroup
 {
-    public DecoratorGroup(Group group, Shedule groupShedule)
+    public ExtraGroup(Group group, Schedule groupSchedule)
     {
         Group = group;
-        Shedule = groupShedule;
+        Schedule = groupSchedule;
         MegaFacultyPrefix = new MegaFacultyPrefix(group.GroupName);
     }
 
-    public Shedule Shedule { get; }
+    public Schedule Schedule { get; }
     public Group Group { get; }
 
     public MegaFacultyPrefix MegaFacultyPrefix { get; }
