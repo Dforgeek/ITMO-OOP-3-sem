@@ -23,4 +23,8 @@
       <ProjectReference Include="..\..\Lab0\Isu\Isu.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services" />
+    </ItemGroup>
+
 </Project>

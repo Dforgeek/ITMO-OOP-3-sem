@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Isu.Entities;
+using Isu.Extra.Tools;
 
 namespace Isu.Extra.Entities;
 
@@ -8,8 +9,11 @@ public class DecoratorGroup
     {
         Group = group;
         Shedule = groupShedule;
+        MegaFacultyPrefix = new MegaFacultyPrefix(group.GroupName);
     }
 
     public Shedule Shedule { get; }
     public Group Group { get; }
+
+    public MegaFacultyPrefix MegaFacultyPrefix { get; }
 }
