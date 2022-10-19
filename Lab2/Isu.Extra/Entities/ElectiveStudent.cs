@@ -1,28 +1,31 @@
 ﻿using Isu.Entities;
+using Isu.Extra.Tools;
 
 namespace Isu.Extra.Entities;
 
-public class ExtraStudent
+public class ElectiveStudent
 {
     private const int MaxAmountOfElectives = 2;
     private readonly List<ElectiveGroup> _electives;
 
-    public ExtraStudent(Student student)
+    public ElectiveStudent(Student student)
     {
         Student = student;
         _electives = new List<ElectiveGroup>();
     }
 
-    public Student Student { get; }
+    public Group Group => Student.Group;
+    public MegaFacultyPrefix MegaFacultyPrefix => new (Group.GroupName);
     public IReadOnlyList<ElectiveGroup> Electives => _electives.AsReadOnly();
+    public Student Student { get; }
 
     public void AddElective(ElectiveGroup electiveGroup)
     {
+        if (_electives.Count == MaxAmountOfElectives)
+            throw new Exception();
         if (_electives.Contains(electiveGroup))
             throw new Exception();
         _electives.Add(electiveGroup);
-        if (!electiveGroup.ExtraStudents.Contains(this))
-            electiveGroup.AddStudent(this);
     }
 
     public void DeleteElective(ElectiveGroup electiveGroup)
@@ -30,7 +33,5 @@ public class ExtraStudent
         if (!_electives.Contains(electiveGroup))
             throw new Exception();
         _electives.Remove(electiveGroup);
-        if (electiveGroup.ExtraStudents.Contains(this))
-            electiveGroup.DeleteStudent(this);
     }
 }

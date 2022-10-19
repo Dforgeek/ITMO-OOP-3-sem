@@ -5,6 +5,7 @@ namespace Isu.Extra.Entities;
 
 public class Schedule
 {
+    private readonly TimeOnly _classicLessonTimeSpan = new (1, 30);
     private readonly List<Lesson> _lessons;
 
     private Schedule(List<Lesson> lessons)
@@ -16,13 +17,13 @@ public class Schedule
 
     public IReadOnlyList<Lesson> Lessons => _lessons.AsReadOnly();
 
-    public static bool ScheduleOverlap(Schedule firstSchedule, Schedule secondSchedule)
+    public bool ScheduleOverlap(Schedule schedule)
     {
-        return firstSchedule._lessons
-            .Any(firstLesson => !secondSchedule._lessons
+        return _lessons
+            .Any(firstLesson => !schedule._lessons
                 .All(secondLesson => firstLesson.DayOfLesson != secondLesson.DayOfLesson ||
-                (Math.Abs(firstLesson.StartingTimeOfLesson.Hour - secondLesson.StartingTimeOfLesson.Hour) >= 1 &&
-                Math.Abs(firstLesson.StartingTimeOfLesson.Minute - secondLesson.StartingTimeOfLesson.Minute) >= 30)));
+                (Math.Abs(firstLesson.StartingTimeOfLesson.Hour - secondLesson.StartingTimeOfLesson.Hour) >= _classicLessonTimeSpan.Hour &&
+                Math.Abs(firstLesson.StartingTimeOfLesson.Minute - secondLesson.StartingTimeOfLesson.Minute) >= _classicLessonTimeSpan.Minute)));
     }
 
     public class ScheduleBuilder

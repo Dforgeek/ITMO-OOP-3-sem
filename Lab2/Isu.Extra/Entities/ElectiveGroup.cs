@@ -1,32 +1,74 @@
 using Isu.Entities;
+using Isu.Extra.Tools;
+using Isu.Models;
 
 namespace Isu.Extra.Entities;
 
-public class ElectiveGroup
+public class ElectiveGroup : IEquatable<ElectiveGroup>
 {
     private const int MaxAmountOfStudents = 40;
-    private readonly List<ExtraStudent> _extraStudents;
+    private readonly List<ElectiveStudent> _electiveStudents;
 
-    public ElectiveGroup(Schedule schedule)
+    public ElectiveGroup(Guid id, MegaFacultyPrefix prefix, Schedule schedule)
     {
-        _extraStudents = new List<ExtraStudent>();
+        MegaFacultyPrefix = prefix;
+        Id = id;
+        _electiveStudents = new List<ElectiveStudent>();
         Schedule = schedule;
     }
 
-    public Schedule Schedule { get; }
+    public MegaFacultyPrefix MegaFacultyPrefix { get; }
+    public Guid Id { get; }
+    public Schedule Schedule { get; private set; }
+    public IReadOnlyList<ElectiveStudent> ElectiveStudents => _electiveStudents.AsReadOnly();
 
-    public IReadOnlyList<ExtraStudent> ExtraStudents => _extraStudents.AsReadOnly();
-
-    public void AddStudent(ExtraStudent newExtraStudent)
+    public void AddStudent(ElectiveStudent newElectiveStudent)
     {
-        if (_extraStudents.Count == MaxAmountOfStudents)
+        if (_electiveStudents.Count == MaxAmountOfStudents)
             throw new Exception();
-        _extraStudents.Add(newExtraStudent);
+        if (newElectiveStudent.MegaFacultyPrefix.Equals(MegaFacultyPrefix))
+            throw new Exception();
+        if (_electiveStudents.Contains(newElectiveStudent))
+            throw new Exception();
+
+        _electiveStudents.Add(newElectiveStudent);
     }
 
-    public void DeleteStudent(ExtraStudent oldExtraStudent)
+    public void DeleteStudent(ElectiveStudent oldElectiveStudent)
     {
-        if (!_extraStudents.Remove(oldExtraStudent))
+        if (!_electiveStudents.Remove(oldElectiveStudent))
             throw new Exception();
+    }
+
+    public void ChangeSchedule(Schedule newSchedule)
+    {
+        Schedule = newSchedule;
+    }
+
+    public ElectiveStudent? FindElectiveStudent(int id)
+    {
+        return _electiveStudents.FirstOrDefault(student => student.Student.Id == id);
+    }
+
+    public bool Equals(ElectiveGroup? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return _electiveStudents.Equals(other._electiveStudents)
+               && MegaFacultyPrefix.Equals(other.MegaFacultyPrefix)
+               && Id.Equals(other.Id) && Schedule.Equals(other.Schedule);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((ElectiveGroup)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_electiveStudents, MegaFacultyPrefix, Id, Schedule);
     }
 }

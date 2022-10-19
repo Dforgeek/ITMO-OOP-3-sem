@@ -1,60 +1,128 @@
-﻿using Isu.Entities;
+﻿using System.Data.Common;
+using System.Runtime.CompilerServices;
+using Isu.Entities;
+using Isu.Extra.Entities;
+using Isu.Extra.Tools;
 using Isu.Models;
 using Isu.Services;
 
 namespace Isu.Extra.Services;
 
-public class IsuExtraService : IIsuService
+public class IsuExtraService
 {
-    private IsuService _isuService;
+    private readonly List<ElectiveModule> _electiveModules;
+    private readonly List<ExtraGroup> _extraGroups;
+    private readonly List<ElectiveStudent> _electiveStudents;
+
+    public IsuExtraService(IsuService isuService)
+    {
+        IsuService = isuService;
+        _electiveModules = new List<ElectiveModule>();
+        _extraGroups = new List<ExtraGroup>();
+        _electiveStudents = new List<ElectiveStudent>();
+    }
 
     public IsuExtraService()
     {
-        _isuService = new IsuService();
+        IsuService = new IsuService();
+        _electiveModules = new List<ElectiveModule>();
+        _extraGroups = new List<ExtraGroup>();
+        _electiveStudents = new List<ElectiveStudent>();
     }
 
-    public Group AddGroup(GroupName name)
+    public IsuService IsuService { get; }
+
+    public ElectiveModule AddElectiveModule(string name, MegaFacultyPrefix prefix)
     {
-        return _isuService.AddGroup(name);
+        var newElectiveModule = new ElectiveModule(Guid.NewGuid(), name, prefix);
+        if (_electiveModules.Contains(newElectiveModule))
+            throw new Exception();
+        return newElectiveModule;
     }
 
-    public Student AddStudent(Group group, string name)
+    public ElectiveModule? FindElectiveModule(Guid electiveModuleId)
     {
-        return _isuService.AddStudent(group, name);
+        return _electiveModules.FirstOrDefault(module => module.Id == electiveModuleId);
     }
 
-    public Student GetStudent(int id)
+    public ElectiveModule GetElectiveModule(Guid electiveModuleId)
     {
-        return _isuService.GetStudent(id);
+        ElectiveModule? electiveModule = FindElectiveModule(electiveModuleId);
+        if (electiveModule == null)
+            throw new Exception();
+        return electiveModule;
     }
 
-    public Student? FindStudent(int id)
+    public ElectiveGroup AddElectiveGroup(Guid electiveModuleId, Schedule schedule)
     {
-        return _isuService.FindStudent(id);
+        return GetElectiveModule(electiveModuleId).CreateNewElectiveGroup(Guid.NewGuid(), schedule);
     }
 
-    public List<Student> FindStudents(GroupName groupName)
+    public ElectiveGroup? FindElectiveGroup(Guid electiveGroupId)
     {
-        return _isuService.FindStudents(groupName);
+        return _electiveModules.Select(electiveModule => electiveModule.FindElectiveGroup(electiveGroupId))
+            .FirstOrDefault(electiveGroup => electiveGroup != null);
     }
 
-    public List<Student> FindStudents(CourseNumber courseNumber)
+    public ExtraGroup AddExtraGroupFromExistingGroup(Group group, Schedule schedule)
     {
-        return _isuService.FindStudents(courseNumber);
+        _extraGroups.Add(new ExtraGroup(group, schedule));
+        return _extraGroups.Last();
     }
 
-    public Group? FindGroup(GroupName groupName)
+    public ExtraGroup AddExtraGroup(GroupName groupName, Schedule schedule)
     {
-        return _isuService.FindGroup(groupName);
+        return AddExtraGroupFromExistingGroup(IsuService.AddGroup(groupName), schedule);
     }
 
-    public List<Group> FindGroups(CourseNumber courseNumber)
+    public ExtraGroup? FindExtraGroup(GroupName groupName)
     {
-        return _isuService.FindGroups(courseNumber);
+        return _extraGroups.FirstOrDefault(extraGroup => extraGroup.Group.GroupName.Name == groupName.Name);
     }
 
-    public void ChangeStudentGroup(Student student, Group newGroup)
+    public ElectiveStudent AddElectiveStudent(Student student)
     {
-        _isuService.ChangeStudentGroup(student, newGroup);
+        if (IsuService.FindStudent(student.Id) == null)
+            throw new Exception();
+        _electiveStudents.Add(new ElectiveStudent(student));
+        return _electiveStudents.Last();
+    }
+
+    public ElectiveStudent? FindElectiveStudent(int studentId)
+    {
+        return _electiveStudents.FirstOrDefault(electiveStudent => electiveStudent.Student.Id == studentId);
+    }
+
+    public void AddElectiveStudentToElectiveGroup(ElectiveStudent electiveStudent, ElectiveGroup electiveGroup)
+    {
+        electiveGroup.AddStudent(electiveStudent); // TODO: Add validation of overlapping
+        electiveStudent.AddElective(electiveGroup);
+    }
+
+    public void DeleteElectiveStudentFromElectiveGroup(ElectiveStudent electiveStudent, ElectiveGroup electiveGroup)
+    {
+        electiveGroup.DeleteStudent(electiveStudent);
+        electiveStudent.DeleteElective(electiveGroup);
+    }
+
+    public List<ElectiveGroup> GetElectiveGroups(Guid electiveModuleId)
+    {
+        ElectiveModule? electiveModule = FindElectiveModule(electiveModuleId);
+        if (electiveModule == null)
+            throw new Exception();
+        return electiveModule.ElectiveGroups.ToList();
+    }
+
+    public List<ElectiveStudent> GetElectiveStudents(Guid electiveGroupId)
+    {
+        ElectiveGroup? electiveGroup = FindElectiveGroup(electiveGroupId);
+        if (electiveGroup == null)
+            throw new Exception();
+        return electiveGroup.ElectiveStudents.ToList();
+    }
+
+    public List<ElectiveStudent> GetStudentsWithoutElectives()
+    {
+        return _electiveStudents.Where(student => student.Electives.Count == 0).ToList();
     }
 }
