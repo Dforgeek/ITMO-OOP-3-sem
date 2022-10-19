@@ -22,7 +22,6 @@ public class ElectiveGroup
         if (_extraStudents.Count == MaxAmountOfStudents)
             throw new Exception();
         _extraStudents.Add(newExtraStudent);
-        newExtraStudent.
     }
 
     public void DeleteStudent(ExtraStudent oldExtraStudent)

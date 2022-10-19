@@ -12,15 +12,24 @@ public class Schedule
         _lessons = lessons;
     }
 
-    public static SheduleBuilder Builder => new SheduleBuilder();
+    public static ScheduleBuilder Builder => new ScheduleBuilder();
 
     public IReadOnlyList<Lesson> Lessons => _lessons.AsReadOnly();
 
-    public class SheduleBuilder
+    public static bool ScheduleOverlap(Schedule firstSchedule, Schedule secondSchedule)
+    {
+        return firstSchedule._lessons
+            .Any(firstLesson => !secondSchedule._lessons
+                .All(secondLesson => firstLesson.DayOfLesson != secondLesson.DayOfLesson ||
+                (Math.Abs(firstLesson.StartingTimeOfLesson.Hour - secondLesson.StartingTimeOfLesson.Hour) >= 1 &&
+                Math.Abs(firstLesson.StartingTimeOfLesson.Minute - secondLesson.StartingTimeOfLesson.Minute) >= 30)));
+    }
+
+    public class ScheduleBuilder
     {
         private readonly List<Lesson> _lessons;
 
-        public SheduleBuilder()
+        public ScheduleBuilder()
         {
             _lessons = new List<Lesson>();
         }

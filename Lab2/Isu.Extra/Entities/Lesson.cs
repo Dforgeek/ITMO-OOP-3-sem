@@ -11,20 +11,18 @@ public class Lesson
     private readonly TimeOnly _minTime = new (5, 0, 0);
     private readonly TimeOnly _maxTime = new (23, 0, 0);
 
-    public Lesson(TimeOnly startTime, int dayOfLesson, Teacher teacher, ExtraGroup group)
+    public Lesson(TimeOnly startTime, int dayOfLesson, Teacher teacher)
     {
         if (!ValidateNumOfLessonAndDayOfLesson(startTime, dayOfLesson))
             throw new Exception();
         StartingTimeOfLesson = startTime;
         DayOfLesson = dayOfLesson;
         Teacher = teacher;
-        Group = group;
     }
 
     public TimeOnly StartingTimeOfLesson { get; }
     public int DayOfLesson { get; }
     public Teacher Teacher { get; }
-    public ExtraGroup Group { get; }
 
     private bool ValidateNumOfLessonAndDayOfLesson(TimeOnly startTime, int dayOfLesson)
     {

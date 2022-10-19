@@ -18,11 +18,19 @@ public class ExtraStudent
 
     public void AddElective(ElectiveGroup electiveGroup)
     {
-        _electives.Add(electiveGroup); // валидация что уже не добавлен на этот поток
+        if (_electives.Contains(electiveGroup))
+            throw new Exception();
+        _electives.Add(electiveGroup);
+        if (!electiveGroup.ExtraStudents.Contains(this))
+            electiveGroup.AddStudent(this);
     }
 
     public void DeleteElective(ElectiveGroup electiveGroup)
     {
-        _electives.Remove(electiveGroup); // валидация
+        if (!_electives.Contains(electiveGroup))
+            throw new Exception();
+        _electives.Remove(electiveGroup);
+        if (electiveGroup.ExtraStudents.Contains(this))
+            electiveGroup.DeleteStudent(this);
     }
 }
