@@ -1,4 +1,5 @@
 ﻿using Isu.Entities;
+using Isu.Extra.Exceptions;
 using Isu.Extra.Tools;
 
 namespace Isu.Extra.Entities;
@@ -22,16 +23,16 @@ public class ElectiveStudent
     public void AddElective(ElectiveGroup electiveGroup)
     {
         if (_electives.Count == MaxAmountOfElectives)
-            throw new Exception();
+            throw ElectiveStudentException.LimitOfElectiveGroupsExceeded();
         if (_electives.Contains(electiveGroup))
-            throw new Exception();
+            throw ElectiveStudentException.StudentAlreadyHasThisElective();
         _electives.Add(electiveGroup);
     }
 
     public void DeleteElective(ElectiveGroup electiveGroup)
     {
         if (!_electives.Contains(electiveGroup))
-            throw new Exception();
+            throw ElectiveStudentException.NoSuchElective();
         _electives.Remove(electiveGroup);
     }
 }

@@ -1,4 +1,5 @@
 using Isu.Entities;
+using Isu.Extra.Exceptions;
 using Isu.Extra.Tools;
 using Isu.Models;
 
@@ -25,11 +26,11 @@ public class ElectiveGroup : IEquatable<ElectiveGroup>
     public void AddStudent(ElectiveStudent newElectiveStudent)
     {
         if (_electiveStudents.Count == MaxAmountOfStudents)
-            throw new Exception();
+            throw ElectiveGroupException.LimitOfElectiveStudentsExceeded();
         if (newElectiveStudent.MegaFacultyPrefix.Equals(MegaFacultyPrefix))
-            throw new Exception();
+            throw ElectiveGroupException.MegaFacultyIsTheSameForStudentAndElective();
         if (_electiveStudents.Contains(newElectiveStudent))
-            throw new Exception();
+            throw ElectiveGroupException.ElectiveGroupAlreadyHasThisStudent();
 
         _electiveStudents.Add(newElectiveStudent);
     }
@@ -37,7 +38,7 @@ public class ElectiveGroup : IEquatable<ElectiveGroup>
     public void DeleteStudent(ElectiveStudent oldElectiveStudent)
     {
         if (!_electiveStudents.Remove(oldElectiveStudent))
-            throw new Exception();
+            throw ElectiveGroupException.NoSuchStudent();
     }
 
     public void ChangeSchedule(Schedule newSchedule)

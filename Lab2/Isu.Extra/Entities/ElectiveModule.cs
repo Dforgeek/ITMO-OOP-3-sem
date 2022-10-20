@@ -1,3 +1,4 @@
+using Isu.Extra.Exceptions;
 using Isu.Extra.Tools;
 
 namespace Isu.Extra.Entities;
@@ -9,7 +10,7 @@ public class ElectiveModule : IEquatable<ElectiveModule>
     public ElectiveModule(Guid id, string name, MegaFacultyPrefix prefix)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new Exception();
+            throw ElectiveModuleException.NameIsNullOrEmpty();
         Name = name;
         Id = id;
         MegaFacultyPrefix = prefix;
@@ -26,7 +27,8 @@ public class ElectiveModule : IEquatable<ElectiveModule>
     {
         var electiveGroup = new ElectiveGroup(id, MegaFacultyPrefix, schedule);
         if (_electiveGroups.Contains(electiveGroup))
-            throw new Exception();
+            throw ElectiveModuleException.ElectiveGroupAlreadyExists();
+
         _electiveGroups.Add(new ElectiveGroup(id, MegaFacultyPrefix, schedule));
         return _electiveGroups.Last();
     }
@@ -34,7 +36,7 @@ public class ElectiveModule : IEquatable<ElectiveModule>
     public void AddNewElectiveGroup(ElectiveGroup electiveGroup)
     {
         if (_electiveGroups.Contains(electiveGroup))
-            throw new Exception();
+            throw ElectiveModuleException.ElectiveGroupAlreadyExists();
 
         _electiveGroups.Add(electiveGroup);
     }

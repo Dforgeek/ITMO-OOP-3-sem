@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Xml;
+using Isu.Extra.Exceptions;
 using Isu.Models;
 
 namespace Isu.Extra.Entities;
@@ -14,7 +15,7 @@ public record Lesson
     public Lesson(TimeOnly startTime, int dayOfLesson, int classroomNumber, Teacher teacher)
     {
         if (!ValidateStartTimeAndDayOfLesson(startTime, dayOfLesson))
-            throw new Exception();
+            throw LessonException.InvalidDayOrStartTime();
         StartingTimeOfLesson = startTime;
         DayOfLesson = dayOfLesson;
         ClassroomNumber = classroomNumber;

@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using Isu;
+using Isu.Extra.Exceptions;
 
 namespace Isu.Extra.Entities;
 
@@ -20,10 +21,12 @@ public class Schedule
     public bool ScheduleOverlap(Schedule schedule)
     {
         return _lessons
-            .Any(firstLesson => !schedule._lessons
-                .All(secondLesson => firstLesson.DayOfLesson != secondLesson.DayOfLesson ||
-                (Math.Abs(firstLesson.StartingTimeOfLesson.Hour - secondLesson.StartingTimeOfLesson.Hour) >= _classicLessonTimeSpan.Hour &&
-                Math.Abs(firstLesson.StartingTimeOfLesson.Minute - secondLesson.StartingTimeOfLesson.Minute) >= _classicLessonTimeSpan.Minute)));
+            .Any(firstLesson => !schedule._lessons.All(secondLesson =>
+                firstLesson.DayOfLesson != secondLesson.DayOfLesson ||
+                (Math.Abs(firstLesson.StartingTimeOfLesson.Hour - secondLesson.StartingTimeOfLesson.Hour) >=
+                 _classicLessonTimeSpan.Hour &&
+                 Math.Abs(firstLesson.StartingTimeOfLesson.Minute - secondLesson.StartingTimeOfLesson.Minute) >=
+                 _classicLessonTimeSpan.Minute)));
     }
 
     public class ScheduleBuilder
@@ -38,13 +41,20 @@ public class Schedule
         public void AddLesson(Lesson lesson)
         {
             if (!ValidateLesson(lesson))
-                throw new Exception();
+                throw ScheduleBuilderException.LessonOverlap();
             _lessons.Add(lesson);
         }
 
         public Schedule Build()
         {
-            return new Schedule(_lessons);
+            var newSchedule = new Schedule(_lessons);
+            Reset();
+            return newSchedule;
+        }
+
+        public void Reset()
+        {
+            _lessons.Clear();
         }
 
         public bool ValidateLesson(Lesson newLesson)
