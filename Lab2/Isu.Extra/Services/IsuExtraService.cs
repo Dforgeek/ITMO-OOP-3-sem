@@ -30,7 +30,7 @@ public class IsuExtraService
         _electiveStudents = new List<ElectiveStudent>();
     }
 
-    public IsuService IsuService { get; }
+    private IsuService IsuService { get; }
 
     public ElectiveStudent AddElectiveStudentFromExistingStudent(Student student)
     {
@@ -69,12 +69,14 @@ public class IsuExtraService
 
     public ElectiveGroup AddElectiveGroup(Guid electiveModuleId, Schedule schedule)
     {
-        return GetElectiveModule(electiveModuleId).CreateNewElectiveGroup(Guid.NewGuid(), schedule);
+        return GetElectiveModule(electiveModuleId).CreateNewElectiveGroup(schedule);
     }
 
     public ElectiveGroup? FindElectiveGroup(Guid electiveGroupId)
     {
-        return _electiveModules.Select(electiveModule => electiveModule.FindElectiveGroup(electiveGroupId))
+        return _electiveModules
+            .Select(electiveModule => electiveModule.ElectiveGroups
+                .FirstOrDefault(electiveGroup => electiveGroup.Id == electiveGroupId))
             .FirstOrDefault(electiveGroup => electiveGroup != null);
     }
 
@@ -120,7 +122,7 @@ public class IsuExtraService
 
     public ElectiveStudent? FindElectiveStudent(int studentId)
     {
-        return _electiveStudents.FirstOrDefault(electiveStudent => electiveStudent.Student.Id == studentId);
+        return _electiveStudents.FirstOrDefault(electiveStudent => electiveStudent.Id == studentId);
     }
 
     public void AddElectiveStudentToElectiveGroup(ElectiveStudent electiveStudent, ElectiveGroup electiveGroup)
@@ -128,8 +130,9 @@ public class IsuExtraService
         foreach (ElectiveGroup electiveStudentElective in electiveStudent.Electives)
         {
             if (electiveStudentElective.Schedule
-                .ScheduleOverlap(GetExtraGroupOfStudent(electiveStudent.Student).Schedule))
+                .ScheduleOverlap(GetExtraGroupOfStudent(IsuService.GetStudent(electiveStudent.Id)).Schedule))
                 throw IsuExtraException.MainScheduleAndElectiveScheduleOverlap();
+
             if (electiveStudentElective.Schedule.ScheduleOverlap(electiveGroup.Schedule))
                 throw IsuExtraException.ElectiveSchedulesOverlap();
         }

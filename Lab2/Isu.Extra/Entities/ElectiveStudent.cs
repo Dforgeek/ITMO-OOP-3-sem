@@ -15,10 +15,13 @@ public class ElectiveStudent
         _electives = new List<ElectiveGroup>();
     }
 
+    public int Id => Student.Id;
     public Group Group => Student.Group;
+    public string Name => Student.Name;
     public MegaFacultyPrefix MegaFacultyPrefix => new (Group.GroupName);
     public IReadOnlyList<ElectiveGroup> Electives => _electives.AsReadOnly();
-    public Student Student { get; }
+
+    private Student Student { get; }
 
     public void AddElective(ElectiveGroup electiveGroup)
     {

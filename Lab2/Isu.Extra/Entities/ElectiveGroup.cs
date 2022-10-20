@@ -27,8 +27,10 @@ public class ElectiveGroup : IEquatable<ElectiveGroup>
     {
         if (_electiveStudents.Count == MaxAmountOfStudents)
             throw ElectiveGroupException.LimitOfElectiveStudentsExceeded();
+
         if (newElectiveStudent.MegaFacultyPrefix.Equals(MegaFacultyPrefix))
             throw ElectiveGroupException.MegaFacultyIsTheSameForStudentAndElective();
+
         if (_electiveStudents.Contains(newElectiveStudent))
             throw ElectiveGroupException.ElectiveGroupAlreadyHasThisStudent();
 
@@ -41,35 +43,21 @@ public class ElectiveGroup : IEquatable<ElectiveGroup>
             throw ElectiveGroupException.NoSuchStudent();
     }
 
-    public void ChangeSchedule(Schedule newSchedule)
-    {
-        Schedule = newSchedule;
-    }
-
-    public ElectiveStudent? FindElectiveStudent(int id)
-    {
-        return _electiveStudents.FirstOrDefault(student => student.Student.Id == id);
-    }
-
     public bool Equals(ElectiveGroup? other)
     {
         if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return _electiveStudents.Equals(other._electiveStudents)
-               && MegaFacultyPrefix.Equals(other.MegaFacultyPrefix)
-               && Id.Equals(other.Id) && Schedule.Equals(other.Schedule);
+        return ReferenceEquals(this, other) || Id.Equals(other.Id);
     }
 
     public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((ElectiveGroup)obj);
+        return obj.GetType() == GetType() && Equals((ElectiveGroup)obj);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_electiveStudents, MegaFacultyPrefix, Id, Schedule);
+        return Id.GetHashCode();
     }
 }

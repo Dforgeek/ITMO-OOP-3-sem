@@ -11,6 +11,7 @@ public record Lesson
     private const int MaxDayOfLesson = 7;
     private readonly TimeOnly _minTime = new (5, 0, 0);
     private readonly TimeOnly _maxTime = new (23, 0, 0);
+    private readonly TimeOnly _classicLessonTimeSpan = new (1, 30);
 
     public Lesson(TimeOnly startTime, int dayOfLesson, int classroomNumber, Teacher teacher)
     {
@@ -26,6 +27,15 @@ public record Lesson
     public int DayOfLesson { get; }
     public int ClassroomNumber { get; }
     public Teacher Teacher { get; }
+
+    public bool LessonOverlap(Lesson otherLesson)
+    {
+        return DayOfLesson != otherLesson.DayOfLesson ||
+               (Math.Abs(StartingTimeOfLesson.Hour - otherLesson.StartingTimeOfLesson.Hour) >=
+                _classicLessonTimeSpan.Hour &&
+                Math.Abs(StartingTimeOfLesson.Minute - StartingTimeOfLesson.Minute) >=
+                _classicLessonTimeSpan.Minute);
+    }
 
     private bool ValidateStartTimeAndDayOfLesson(TimeOnly startTime, int dayOfLesson)
     {
