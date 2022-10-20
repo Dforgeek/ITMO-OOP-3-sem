@@ -28,6 +28,6 @@ public class MegaFacultyPrefix : IEquatable<MegaFacultyPrefix>
 
     public virtual bool Equals(MegaFacultyPrefix? other)
     {
-        return other is { } && Value.Equals(other.Value);
+        return other?.Value.Equals(Value) ?? false;
     }
 }
