@@ -8,7 +8,7 @@ using Isu.Services;
 
 namespace Isu.Extra.Services;
 
-public class IsuExtraService
+public class IsuExtraService : IIsuExtraService
 {
     private readonly List<ElectiveModule> _electiveModules;
     private readonly List<ExtraGroup> _extraGroups;

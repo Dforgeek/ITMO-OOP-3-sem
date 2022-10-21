@@ -38,4 +38,11 @@ public class ElectiveStudent
             throw ElectiveStudentException.NoSuchElective();
         _electives.Remove(electiveGroup);
     }
+
+    public bool ElectiveSchedulesOverlap(Schedule schedule)
+    {
+        return _electives
+            .Any(electiveStudentElective =>
+                electiveStudentElective.Schedule.ScheduleOverlap(schedule));
+    }
 }
