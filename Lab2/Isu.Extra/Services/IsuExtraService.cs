@@ -8,7 +8,7 @@ using Isu.Services;
 
 namespace Isu.Extra.Services;
 
-public class IsuExtraService : IIsuExtraService
+public class IsuExtraService : IIsuExtraService, IIsuService
 {
     private readonly List<ElectiveModule> _electiveModules;
     private readonly List<ExtraGroup> _extraGroups;
@@ -127,16 +127,11 @@ public class IsuExtraService : IIsuExtraService
 
     public void AddElectiveStudentToElectiveGroup(ElectiveStudent electiveStudent, ElectiveGroup electiveGroup)
     {
-        foreach (ElectiveGroup electiveStudentElective in electiveStudent.Electives)
-        {
-            if (electiveStudentElective.Schedule
-                .ScheduleOverlap(GetExtraGroupOfStudent(IsuService.GetStudent(electiveStudent.Id)).Schedule))
-                throw IsuExtraException.MainScheduleAndElectiveScheduleOverlap();
+        if (electiveStudent.ElectiveSchedulesOverlap(electiveGroup.Schedule))
+            throw IsuExtraException.ElectiveSchedulesOverlap();
 
-            if (electiveStudentElective.Schedule.ScheduleOverlap(electiveGroup.Schedule))
-                throw IsuExtraException.ElectiveSchedulesOverlap();
-        }
-
+        if (GetExtraGroup(electiveStudent.Group.GroupName).Schedule.ScheduleOverlap(electiveGroup.Schedule))
+            throw IsuExtraException.ElectiveSchedulesOverlap();
         electiveGroup.AddStudent(electiveStudent);
         electiveStudent.AddElective(electiveGroup);
     }
@@ -168,5 +163,61 @@ public class IsuExtraService : IIsuExtraService
     public List<ElectiveStudent> GetStudentsWithoutElectives()
     {
         return _electiveStudents.Where(student => student.Electives.Count == 0).ToList();
+    }
+
+    public Group AddGroup(GroupName name)
+    {
+        return IsuService.AddGroup(name);
+    }
+
+    public Student AddStudent(Group group, string name)
+    {
+        return IsuService.AddStudent(group, name);
+    }
+
+    public Student GetStudent(int id)
+    {
+        return IsuService.GetStudent(id);
+    }
+
+    public Student? FindStudent(int id)
+    {
+        return IsuService.FindStudent(id);
+    }
+
+    public List<Student> FindStudents(GroupName groupName)
+    {
+        return IsuService.FindStudents(groupName);
+    }
+
+    public List<Student> FindStudents(CourseNumber courseNumber)
+    {
+        return IsuService.FindStudents(courseNumber);
+    }
+
+    public Group? FindGroup(GroupName groupName)
+    {
+        return IsuService.FindGroup(groupName);
+    }
+
+    public List<Group> FindGroups(CourseNumber courseNumber)
+    {
+        return IsuService.FindGroups(courseNumber);
+    }
+
+    public void ChangeStudentGroup(Student student, Group newGroup)
+    {
+        ChangeStudentExtraGroupValidation(student, GetExtraGroup(newGroup.GroupName));
+        IsuService.ChangeStudentGroup(student, newGroup);
+    }
+
+    private void ChangeStudentExtraGroupValidation(Student student, ExtraGroup newExtraGroup)
+    {
+        ElectiveStudent? electiveStudent = FindElectiveStudent(student.Id);
+        if (electiveStudent == null)
+            throw IsuExtraException.NoSuchStudent();
+
+        if (electiveStudent.ElectiveSchedulesOverlap(newExtraGroup.Schedule))
+            throw IsuExtraException.ElectiveSchedulesOverlap();
     }
 }

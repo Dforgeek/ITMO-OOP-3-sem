@@ -5,12 +5,19 @@ using Isu.Extra.Services;
 using Isu.Extra.Tools;
 using Isu.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Isu.Extra.Test;
 
 public class IsuExtraTest
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private IsuExtraService _isuExtraService = new IsuExtraService();
+
+    public IsuExtraTest(ITestOutputHelper testOutputHelper)
+    {
+        _testOutputHelper = testOutputHelper;
+    }
 
     [Fact]
     public void CheckStudentsWithoutElectives_ReachMaxStudentPerElectiveGroup_ThrowException()
@@ -51,6 +58,67 @@ public class IsuExtraTest
             {
                 _isuExtraService.AddElectiveStudentToElectiveGroup(electiveStudent, electiveGroup);
             }
+        });
+    }
+
+    [Fact]
+    public void AddElectiveStudentsToElective_AssertThatTheyAreThere_DeleteElectiveStudentFromElective()
+    {
+        Schedule.ScheduleBuilder scheduleBuilder = Schedule.Builder;
+        for (int i = 1; i < 7; i++)
+        {
+            var lesson = new Lesson(new TimeOnly(10, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Trifanov-{i}"));
+            scheduleBuilder.AddLesson(lesson);
+        }
+
+        Schedule mainSchedule = scheduleBuilder.Build();
+
+        ExtraGroup extraGroup = _isuExtraService.AddExtraGroup(new GroupName("M3201"), mainSchedule);
+
+        ElectiveStudent ikromjon = _isuExtraService.AddElectiveStudent($"Ikromjon Pukinsky", extraGroup.Group);
+
+        for (int i = 1; i < 7; i++)
+        {
+            var lesson = new Lesson(new TimeOnly(15, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Maytin-{i}"));
+            scheduleBuilder.AddLesson(lesson);
+        }
+
+        Schedule electiveSchedule = scheduleBuilder.Build();
+        ElectiveModule clowns = _isuExtraService.AddElectiveModule("Infobez", new MegaFacultyPrefix('I'));
+        ElectiveGroup electiveGroup = _isuExtraService.AddElectiveGroup(clowns.Id, electiveSchedule);
+
+        foreach (ElectiveStudent electiveStudent in _isuExtraService.GetStudentsWithoutElectives())
+        {
+            _isuExtraService.AddElectiveStudentToElectiveGroup(electiveStudent, electiveGroup);
+        }
+
+        _testOutputHelper.WriteLine(electiveGroup.ElectiveStudents.Last().Name);
+        Assert.Contains(ikromjon, electiveGroup.ElectiveStudents);
+
+        _isuExtraService.DeleteElectiveStudentFromElectiveGroup(ikromjon, electiveGroup);
+        Assert.Equal(0, ikromjon.Electives.Count);
+        Assert.Empty(_isuExtraService.GetElectiveStudents(electiveGroup.Id));
+    }
+
+    [Fact]
+    public void AddElectiveToStudent_ThrowOverlapException()
+    {
+        Schedule.ScheduleBuilder scheduleBuilder = Schedule.Builder;
+        for (int i = 1; i < 7; i++)
+        {
+            var lesson = new Lesson(new TimeOnly(10, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Trifanov-{i}"));
+            scheduleBuilder.AddLesson(lesson);
+        }
+
+        Schedule schedule = scheduleBuilder.Build();
+        ExtraGroup extraGroup = _isuExtraService.AddExtraGroup(new GroupName("M3201"), schedule);
+        ElectiveStudent ikromjon = _isuExtraService.AddElectiveStudent($"Ikromjon Pukinsky", extraGroup.Group);
+
+        ElectiveModule clowns = _isuExtraService.AddElectiveModule("Infobez", new MegaFacultyPrefix('I'));
+        ElectiveGroup electiveGroup = _isuExtraService.AddElectiveGroup(clowns.Id, schedule);
+        Assert.Throws<IsuExtraException>(() =>
+        {
+            _isuExtraService.AddElectiveStudentToElectiveGroup(ikromjon, electiveGroup);
         });
     }
 }

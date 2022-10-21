@@ -19,13 +19,12 @@ public class Schedule
 
     public bool ScheduleOverlap(Schedule schedule)
     {
-        return _lessons
-            .Any(firstLesson => !schedule._lessons.All(secondLesson => secondLesson.LessonOverlap(firstLesson)));
+        return _lessons.Any(lesson1 => schedule._lessons.Any(lesson1.LessonOverlap));
     }
 
     public class ScheduleBuilder
     {
-        private readonly List<Lesson> _lessons;
+        private List<Lesson> _lessons;
 
         public ScheduleBuilder()
         {
@@ -48,7 +47,7 @@ public class Schedule
 
         public void Reset()
         {
-            _lessons.Clear();
+            _lessons = new List<Lesson>();
         }
 
         public bool ValidateLesson(Lesson newLesson)

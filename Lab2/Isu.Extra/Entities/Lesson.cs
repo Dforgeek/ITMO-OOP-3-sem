@@ -30,11 +30,14 @@ public record Lesson
 
     public bool LessonOverlap(Lesson otherLesson)
     {
-        return DayOfLesson != otherLesson.DayOfLesson ||
-               (Math.Abs(StartingTimeOfLesson.Hour - otherLesson.StartingTimeOfLesson.Hour) >=
-                _classicLessonTimeSpan.Hour &&
-                Math.Abs(StartingTimeOfLesson.Minute - StartingTimeOfLesson.Minute) >=
-                _classicLessonTimeSpan.Minute);
+        if (DayOfLesson == otherLesson.DayOfLesson &&
+            Math.Abs(StartingTimeOfLesson.Hour - otherLesson.StartingTimeOfLesson.Hour) < _classicLessonTimeSpan.Hour)
+            return true;
+        return DayOfLesson == otherLesson.DayOfLesson &&
+               Math.Abs(StartingTimeOfLesson.Hour - otherLesson.StartingTimeOfLesson.Hour) <=
+               _classicLessonTimeSpan.Hour &&
+               Math.Abs(StartingTimeOfLesson.Minute - otherLesson.StartingTimeOfLesson.Minute) <
+               _classicLessonTimeSpan.Minute;
     }
 
     private bool ValidateStartTimeAndDayOfLesson(TimeOnly startTime, int dayOfLesson)
