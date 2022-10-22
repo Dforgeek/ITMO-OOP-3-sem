@@ -8,20 +8,19 @@ public class ElectiveStudent
 {
     private const int MaxAmountOfElectives = 2;
     private readonly List<ElectiveGroup> _electives;
+    private readonly Student _student;
 
     public ElectiveStudent(Student student)
     {
-        Student = student;
+        _student = student;
         _electives = new List<ElectiveGroup>();
     }
 
-    public int Id => Student.Id;
-    public Group Group => Student.Group;
-    public string Name => Student.Name;
+    public int Id => _student.Id;
+    public Group Group => _student.Group;
+    public string Name => _student.Name;
     public MegaFacultyPrefix MegaFacultyPrefix => new (Group.GroupName);
     public IReadOnlyList<ElectiveGroup> Electives => _electives.AsReadOnly();
-
-    private Student Student { get; }
 
     public void AddElective(ElectiveGroup electiveGroup)
     {

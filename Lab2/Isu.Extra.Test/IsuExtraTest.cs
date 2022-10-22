@@ -1,6 +1,7 @@
 ﻿using Isu.Entities;
 using Isu.Extra.Entities;
 using Isu.Extra.Exceptions;
+using Isu.Extra.Models;
 using Isu.Extra.Services;
 using Isu.Extra.Tools;
 using Isu.Models;
@@ -25,7 +26,8 @@ public class IsuExtraTest
         Schedule.ScheduleBuilder scheduleBuilder = Schedule.Builder;
         for (int i = 1; i < 7; i++)
         {
-            var lesson = new Lesson(new TimeOnly(10, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Trifanov-{i}"));
+            var lesson =
+                new Lesson(new TimeOnly(10, 0, 0), (DayOfWeek)i, ParityOfWeek.Even, 100, new Teacher(Guid.NewGuid(), $"Trifanov-{i}"));
             scheduleBuilder.AddLesson(lesson);
         }
 
@@ -41,9 +43,9 @@ public class IsuExtraTest
 
         Assert.Equal(50, _isuExtraService.GetStudentsWithoutElectives().Count);
 
-        for (int i = 1; i < 7; i++)
+        for (int i = 0; i < 7; i++)
         {
-            var lesson = new Lesson(new TimeOnly(15, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Maytin-{i}"));
+            var lesson = new Lesson(new TimeOnly(15, 0, 0), (DayOfWeek)i, ParityOfWeek.Even, 100, new Teacher(Guid.NewGuid(), $"Maytin-{i}"));
             scheduleBuilder.AddLesson(lesson);
         }
 
@@ -52,7 +54,7 @@ public class IsuExtraTest
         ElectiveModule clowns = _isuExtraService.AddElectiveModule("Infobez", new MegaFacultyPrefix('I'));
 
         ElectiveGroup electiveGroup = _isuExtraService.AddElectiveGroup(clowns.Id, electiveSchedule);
-        Assert.Throws<ElectiveGroupException>(() =>
+        Assert.Throws<IsuExtraException>(() =>
         {
             foreach (ElectiveStudent electiveStudent in _isuExtraService.GetStudentsWithoutElectives())
             {
@@ -65,11 +67,9 @@ public class IsuExtraTest
     public void AddElectiveStudentsToElective_AssertThatTheyAreThere_DeleteElectiveStudentFromElective()
     {
         Schedule.ScheduleBuilder scheduleBuilder = Schedule.Builder;
-        for (int i = 1; i < 7; i++)
-        {
-            var lesson = new Lesson(new TimeOnly(10, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Trifanov-{i}"));
-            scheduleBuilder.AddLesson(lesson);
-        }
+
+        var lesson1 = new Lesson(new TimeOnly(10, 0, 0), DayOfWeek.Monday, ParityOfWeek.Even, 100, new Teacher(Guid.NewGuid(), $"Trifanov"));
+        scheduleBuilder.AddLesson(lesson1);
 
         Schedule mainSchedule = scheduleBuilder.Build();
 
@@ -77,11 +77,8 @@ public class IsuExtraTest
 
         ElectiveStudent ikromjon = _isuExtraService.AddElectiveStudent($"Ikromjon Pukinsky", extraGroup.Group);
 
-        for (int i = 1; i < 7; i++)
-        {
-            var lesson = new Lesson(new TimeOnly(15, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Maytin-{i}"));
-            scheduleBuilder.AddLesson(lesson);
-        }
+        var lesson2 = new Lesson(new TimeOnly(15, 0, 0), DayOfWeek.Friday, ParityOfWeek.Even, 100, new Teacher(Guid.NewGuid(), $"Maytin"));
+        scheduleBuilder.AddLesson(lesson2);
 
         Schedule electiveSchedule = scheduleBuilder.Build();
         ElectiveModule clowns = _isuExtraService.AddElectiveModule("Infobez", new MegaFacultyPrefix('I'));
@@ -106,7 +103,7 @@ public class IsuExtraTest
         Schedule.ScheduleBuilder scheduleBuilder = Schedule.Builder;
         for (int i = 1; i < 7; i++)
         {
-            var lesson = new Lesson(new TimeOnly(10, 0, 0), i, 100, new Teacher(Guid.NewGuid(), $"Trifanov-{i}"));
+            var lesson = new Lesson(new TimeOnly(10, 0, 0), (DayOfWeek)i, ParityOfWeek.Even, 100, new Teacher(Guid.NewGuid(), $"Trifanov"));
             scheduleBuilder.AddLesson(lesson);
         }
 
