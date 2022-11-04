@@ -25,7 +25,6 @@ public class RestorePoint : IEquatable<RestorePoint>
     public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
         return obj.GetType() == GetType() && Equals((RestorePoint)obj);
     }
 
