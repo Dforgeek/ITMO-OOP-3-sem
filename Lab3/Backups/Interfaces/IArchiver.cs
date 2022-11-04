@@ -2,5 +2,5 @@ namespace Backups.Interfaces;
 
 public interface IArchiver
 {
-    void Archive();
+    void Encode(Stream streamIn, Stream streamOut, string fileName);
 }

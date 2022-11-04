@@ -1,6 +1,8 @@
-﻿namespace Backups.Interfaces;
+﻿using Backups.Entities;
 
-public class IStorageAlgorithm
+namespace Backups.Interfaces;
+
+public interface IStorageAlgorithm
 {
-    
+    void Store(string path, List<BackupObject> backupObjects, IRepository repository);
 }

@@ -5,12 +5,13 @@ namespace Backups.Models;
 
 public class Storage
 {
-    public Storage(BackupObject backupObject, IRepository repository)
-    {
-        BackupObject = backupObject;
-        Repository = repository;
-    }
-
-    public BackupObject BackupObject { get; }
-    public IRepository Repository { get; }
+    // public Storage(BackupObject backupObject, IRepositoryObject repositoryObject)
+    // {
+    //     BackupObject = backupObject;
+    //     RepositoryObject = repositoryObject;
+    // }
+    //
+    // public BackupObject BackupObject { get; }
+    //
+    // public IRepositoryObject RepositoryObject { get; }
 }

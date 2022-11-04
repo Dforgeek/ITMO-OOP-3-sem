@@ -16,6 +16,11 @@ public class RestorePoint : IEquatable<RestorePoint>
 
     public Guid Id { get; }
 
+    public void AddBackupObject(BackupObject backupObject)
+    {
+        _backupObjects.Add(backupObject);
+    }
+
     public bool Equals(RestorePoint? other)
     {
         if (ReferenceEquals(null, other)) return false;

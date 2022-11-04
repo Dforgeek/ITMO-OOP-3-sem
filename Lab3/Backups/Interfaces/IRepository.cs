@@ -4,6 +4,8 @@ namespace Backups.Interfaces;
 
 public interface IRepository
 {
-    void Write(string dirPath, List<Storage> storages);
-    
+    bool IsDirectory(string path);
+    void CreateDirectory(string path);
+
+    Stream GetStream(string path);
 }
