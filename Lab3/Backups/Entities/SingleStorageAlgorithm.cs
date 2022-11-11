@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Backups.Interfaces;
+using Backups.Models;
 
 namespace Backups.Entities;
 
@@ -17,7 +18,7 @@ public class SingleStorageAlgorithm : IStorageAlgorithm
         Stream sourceOut = repository.GetStream(path);
         foreach (BackupObject backupObject in backupObjects)
         {
-            Stream sourceIn = repository.GetStream(backupObject.Path);
+            Stream sourceIn = backupObject.Repository.GetStream(backupObject.PathFromRepToObject);
             _archiver.Encode(sourceIn, sourceOut, "storage.zip");
             sourceIn.Close();
         }

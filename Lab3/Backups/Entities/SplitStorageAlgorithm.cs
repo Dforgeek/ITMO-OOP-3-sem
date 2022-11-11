@@ -1,4 +1,5 @@
 using Backups.Interfaces;
+using Backups.Models;
 
 namespace Backups.Entities;
 
@@ -15,8 +16,8 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
     {
         foreach (BackupObject backupObject in backupObjects)
         {
-            Stream sourceOut = repository.GetStream(Path.Combine(path, Path.GetFileName(backupObject.Path)));
-            Stream sourceIn = repository.GetStream(backupObject.Path);
+            Stream sourceOut = repository.GetStream(Path.Combine(path, Path.GetFileName(backupObject.PathFromRepToObject)));
+            Stream sourceIn = repository.GetStream(backupObject.PathFromRepToObject);
             _archiver.Encode(sourceIn, sourceOut, "storage.zip");
             sourceIn.Close();
             sourceOut.Close();

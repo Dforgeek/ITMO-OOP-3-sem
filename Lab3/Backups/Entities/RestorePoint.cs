@@ -1,4 +1,6 @@
-﻿namespace Backups.Entities;
+﻿using Backups.Models;
+
+namespace Backups.Entities;
 
 public class RestorePoint : IEquatable<RestorePoint>
 {

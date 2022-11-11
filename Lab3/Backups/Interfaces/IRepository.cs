@@ -4,8 +4,9 @@ namespace Backups.Interfaces;
 
 public interface IRepository
 {
-    bool IsDirectory(string path);
-    void CreateDirectory(string path);
+    string PathToRepository { get; }
+    bool ValidatePathInsideRepository(string pathToObjectFromRepository);
+    IRepositoryObject GetRepositoryObject(string path);
 
     Stream GetStream(string path);
 }

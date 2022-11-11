@@ -1,19 +1,26 @@
 ﻿using Backups.Interfaces;
 
-namespace Backups.Entities;
+namespace Backups.Models;
 
 public class BackupObject
 {
-    public BackupObject(IRepository repository, string path, Guid id)
+    public BackupObject(IRepository repository, string pathFromRepToObject, Guid id)
     {
-        if (string.IsNullOrWhiteSpace(path))
+        if (repository.ValidatePathInsideRepository(pathFromRepToObject))
             throw new Exception();
-        Path = path;
+        if (string.IsNullOrWhiteSpace(pathFromRepToObject))
+            throw new Exception();
+        PathFromRepToObject = pathFromRepToObject;
         Id = id;
         Repository = repository;
     }
 
     public Guid Id { get; }
-    public string Path { get; }
+    public string PathFromRepToObject { get; }
     public IRepository Repository { get; }
+
+    public IRepositoryObject GetRepositoryObject()
+    {
+        return Repository.GetRepositoryObject(PathFromRepToObject); // Is it correct?
+    }
 }

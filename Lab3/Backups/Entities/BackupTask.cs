@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using Backups.Interfaces;
+using Backups.Models;
 
 namespace Backups.Entities;
 
