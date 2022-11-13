@@ -2,4 +2,5 @@
 
 public interface IFolder : IRepositoryObject
 {
+    IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects();
 }

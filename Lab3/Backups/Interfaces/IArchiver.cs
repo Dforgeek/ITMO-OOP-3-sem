@@ -1,6 +1,9 @@
+using Backups.Entities;
+using Backups.Models;
+
 namespace Backups.Interfaces;
 
 public interface IArchiver
 {
-    void Encode(Stream streamIn, Stream streamOut, string fileName);
+    IStorage Encode(List<IRepositoryObject> repositoryObjects, IRepository repository, string path);
 }

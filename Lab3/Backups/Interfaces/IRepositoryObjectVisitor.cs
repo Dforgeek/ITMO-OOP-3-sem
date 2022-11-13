@@ -4,7 +4,7 @@ namespace Backups.Interfaces;
 
 public interface IRepositoryObjectVisitor
 {
-    void VisitFile(IFile file);
+    void Visit(IFile file);
 
-    void VisitFolder(IFolder folder);
+    void Visit(IFolder folder);
 }

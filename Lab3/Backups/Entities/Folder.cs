@@ -8,16 +8,16 @@ public class Folder : IFolder
     public Folder(IRepository repository, string path, Func<IReadOnlyCollection<IRepositoryObject>> functor)
     {
         Repository = repository;
-        RelativePath = path;
+        Name = path;
         _functor = functor;
     }
 
-    public string RelativePath { get; }
+    public string Name { get; }
     public IRepository Repository { get; }
 
-    public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects
+    public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {
-        
+        return _functor();
     }
 
     public void Accept(IRepositoryObjectVisitor repositoryObjectVisitor)

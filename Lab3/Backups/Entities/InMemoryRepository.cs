@@ -1,4 +1,5 @@
 ﻿using Backups.Interfaces;
+using Backups.Models;
 using Zio;
 using Zio.FileSystems;
 using static System.IO.Path;
@@ -9,23 +10,26 @@ public class InMemoryRepository : IRepository
 {
     private IFileSystem _fileSystem;
 
-    public InMemoryRepository(IFileSystem memoryFileSystem)
+    public InMemoryRepository(string pathToRepository, IFileSystem memoryFileSystem)
     {
         _fileSystem = memoryFileSystem;
+        PathToRepository = pathToRepository;
     }
 
-    public bool IsDirectory(string path)
+    public string PathToRepository { get; }
+
+    public bool ValidatePathInsideRepository(string pathToObjectFromRepository)
     {
-        return Directory.Exists(path);
+        throw new NotImplementedException();
     }
 
-    public void CreateDirectory(string path)
+    public IRepositoryObject GetRepositoryObject(BackupObject backupObject)
     {
-        _fileSystem.CreateDirectory(path);
+        throw new NotImplementedException();
     }
 
-    public Stream GetStream(string path)
+    public Stream OpenWrite()
     {
-        return _fileSystem.OpenFile(path, FileMode.Create, FileAccess.ReadWrite);
+        throw new NotImplementedException();
     }
 }

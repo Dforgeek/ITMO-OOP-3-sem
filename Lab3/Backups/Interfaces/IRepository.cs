@@ -6,7 +6,8 @@ public interface IRepository
 {
     string PathToRepository { get; }
     bool ValidatePathInsideRepository(string pathToObjectFromRepository);
-    IRepositoryObject GetRepositoryObject(string path);
+    IRepositoryObject GetRepositoryObject(BackupObject backupObject);
 
-    Stream GetStream(string path);
+    Stream OpenWrite(string path);
+    Stream OpenRead(string path);
 }

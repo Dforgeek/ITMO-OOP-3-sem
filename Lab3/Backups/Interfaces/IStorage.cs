@@ -2,5 +2,5 @@
 
 public interface IStorage
 {
-    List<IRepositoryObject> GetRepositoryObjects;
+    List<IRepositoryObject> GetRepositoryObjects();
 }

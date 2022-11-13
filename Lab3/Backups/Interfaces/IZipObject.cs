@@ -1,6 +1,9 @@
-﻿namespace Backups.Interfaces;
+﻿using System.IO.Compression;
+
+namespace Backups.Interfaces;
 
 public interface IZipObject
 {
-    IRepositoryObject GetIRepositoryObject();
+    string Name { get; }
+    IRepositoryObject GetIRepositoryObject(ZipArchiveEntry zipArchiveEntry);
 }

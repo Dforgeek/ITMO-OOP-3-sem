@@ -6,31 +6,18 @@ namespace Backups.Entities;
 
 public class ZipArchiver : IArchiver
 {
-    private List<BackupObject> _backupObjects;
-    private IRepository _repository;
-    private string _path;
+    public ZipArchiver() { }
 
-    public ZipArchiver(IRepository repository, string path)
+    public IStorage Encode(List<IRepositoryObject> repositoryObjects, IRepository repository, string path)
     {
-        _backupObjects = new List<BackupObject>();
-        _repository = repository;
-        _path = path;
-    }
-
-    public IReadOnlyList<BackupObject> BackupObjects => _backupObjects.AsReadOnly();
-
-    public void AddBackupObject(BackupObject backupObject)
-    {
-        _backupObjects.Add(backupObject);
-    }
-
-    public void Encode(Stream streamIn, Stream streamOut, string fileName)
-    {
-        using (var archive = new ZipArchive(streamOut))
+        Stream writeStream = repository.OpenWrite(path);
+        var zipArchive = new ZipArchive(writeStream, ZipArchiveMode.Create);
+        var zipVisitor = new ZipVisitor(zipArchive);
+        foreach (IRepositoryObject repositoryObject in repositoryObjects)
         {
-            ZipArchiveEntry file = archive.CreateEntry(fileName);
-            using (Stream stream = file.Open())
-                streamIn.CopyTo(stream);
+            repositoryObject.Accept(zipVisitor);
         }
+
+        return new ZipStorage(repository, path, zipVisitor.ZipObjects());
     }
 }

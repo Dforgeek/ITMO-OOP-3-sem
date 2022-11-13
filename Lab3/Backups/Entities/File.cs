@@ -6,23 +6,21 @@ public class File : IFile
 {
     private Func<Stream> _streamFunctor;
 
-    public File(IRepository repository, string pathFromRepToObject, Func<Stream> streamFunctor)
+    public File(string pathFromRepToObject, Func<Stream> streamFunctor)
     {
         _streamFunctor = streamFunctor;
-        PathFromRepToObject = pathFromRepToObject;
-        Repository = repository;
+        Name = pathFromRepToObject;
     }
 
-    public IRepository Repository { get; }
-    public string PathFromRepToObject { get; }
+    public string Name { get; }
 
     public void Accept(IRepositoryObjectVisitor repositoryObjectVisitor)
     {
-        throw new NotImplementedException();
+        repositoryObjectVisitor.Visit(this);
     }
 
     public Stream GetStream()
     {
-        return Repository.GetStream(PathFromRepToObject);
+        return _streamFunctor();
     }
 }

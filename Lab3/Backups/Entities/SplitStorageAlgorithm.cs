@@ -12,15 +12,8 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
         _archiver = archiver;
     }
 
-    public void Store(string path, List<BackupObject> backupObjects, IRepository repository)
+    public IStorage Store(List<BackupObject> backupObjects, IRepository repository, string path)
     {
-        foreach (BackupObject backupObject in backupObjects)
-        {
-            Stream sourceOut = repository.GetStream(Path.Combine(path, Path.GetFileName(backupObject.PathFromRepToObject)));
-            Stream sourceIn = repository.GetStream(backupObject.PathFromRepToObject);
-            _archiver.Encode(sourceIn, sourceOut, "storage.zip");
-            sourceIn.Close();
-            sourceOut.Close();
-        }
+        throw new NotImplementedException();
     }
 }

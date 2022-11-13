@@ -21,6 +21,6 @@ public class BackupObject
 
     public IRepositoryObject GetRepositoryObject()
     {
-        return Repository.GetRepositoryObject(PathFromRepToObject); // Is it correct?
+        return Repository.GetRepositoryObject(this); // Is it correct?
     }
 }

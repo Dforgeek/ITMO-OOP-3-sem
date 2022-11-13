@@ -1,4 +1,5 @@
 ﻿using Backups.Interfaces;
+using Backups.Models;
 
 namespace Backups.Entities;
 
@@ -10,21 +11,23 @@ public class FileSystemRepository : IRepository
     }
 
     public string PathToRepository { get; }
-
-    public bool IsDirectory(string path)
+    public bool ValidatePathInsideRepository(string pathToObjectFromRepository)
     {
-        return Directory.Exists(path);
+        throw new NotImplementedException();
     }
 
-    public void CreateDirectory(string path)
+    public IRepositoryObject GetRepositoryObject(BackupObject backupObject)
     {
-        if (Directory.Exists(path))
-            throw new Exception();
-        Directory.CreateDirectory(path);
+        throw new NotImplementedException();
     }
 
-    public Stream GetStream(string path)
+    public Stream OpenWrite(string path)
     {
-        return File.Open(Path.GetFileName(path), FileMode.Open);
+        throw new NotImplementedException();
+    }
+
+    public Stream OpenRead(string path)
+    {
+        throw new NotImplementedException();
     }
 }

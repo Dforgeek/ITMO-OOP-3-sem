@@ -2,41 +2,49 @@
 
 namespace Backups.Entities;
 
-public class RestorePoint : IEquatable<RestorePoint>
+public class RestorePoint
 {
     private readonly List<BackupObject> _backupObjects;
 
-    public RestorePoint(DateTime dateTime, Guid id)
+    private RestorePoint(DateTime dateTime, Guid id, List<BackupObject> backupObjects)
     {
         DateTime = dateTime;
         Id = id;
-        _backupObjects = new List<BackupObject>();
+        _backupObjects = backupObjects;
     }
 
+    public static RestorePointBuilder Builder => new RestorePointBuilder();
     public IReadOnlyList<BackupObject> BackupObjects => _backupObjects.AsReadOnly();
     public DateTime DateTime { get; }
 
     public Guid Id { get; }
 
-    public void AddBackupObject(BackupObject backupObject)
+    public class RestorePointBuilder
     {
-        _backupObjects.Add(backupObject);
-    }
+        private List<BackupObject> _backupObjects;
 
-    public bool Equals(RestorePoint? other)
-    {
-        if (ReferenceEquals(null, other)) return false;
-        return ReferenceEquals(this, other) || Id.Equals(other.Id);
-    }
+        public RestorePointBuilder()
+        {
+            _backupObjects = new List<BackupObject>();
+        }
 
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        return obj.GetType() == GetType() && Equals((RestorePoint)obj);
-    }
+        public void AddBackupObject(BackupObject backupObject)
+        {
+            if (_backupObjects.Contains(backupObject))
+                throw new Exception();
+            _backupObjects.Add(backupObject);
+        }
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
+        public void Reset()
+        {
+            _backupObjects = new List<BackupObject>();
+        }
+
+        public RestorePoint Build()
+        {
+            var newRestorePoint = new RestorePoint(DateTime.Now, Guid.NewGuid(), _backupObjects);
+            Reset();
+            return newRestorePoint;
+        }
     }
 }

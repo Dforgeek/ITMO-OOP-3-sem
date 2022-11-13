@@ -7,9 +7,10 @@ namespace Backups.Entities;
 public class BackupTask
 {
     private readonly List<BackupObject> _currentBackupObjects;
-    private Backup _backup;
+    private readonly List<RestorePoint> _restorePoints;
 
-    public BackupTask(string name, string backupTaskPath, IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
+    public BackupTask(string name, string backupTaskPath, IRepository repository, IStorageAlgorithm storageAlgorithm,
+        Guid id)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new Exception();
@@ -18,7 +19,7 @@ public class BackupTask
         BackupTaskPath = Path.Combine(backupTaskPath, name);
         StorageAlgorithm = storageAlgorithm;
         Id = id;
-        _backup = new Backup();
+        _restorePoints = new List<RestorePoint>();
         _currentBackupObjects = new List<BackupObject>();
         Repository = repository;
     }
@@ -28,24 +29,21 @@ public class BackupTask
     public IStorageAlgorithm StorageAlgorithm { get; }
     public string Name { get; }
     public string BackupTaskPath { get; }
+    public IReadOnlyCollection<RestorePoint> RestorePoints => _restorePoints.AsReadOnly();
 
     public RestorePoint AddRestorePoint()
     {
-        if (!Directory.Exists(BackupTaskPath))
-            Repository.CreateDirectory(BackupTaskPath);
-
         string restorePointPath = Path.Combine(BackupTaskPath, DateTime.Now.ToString());
-        Repository.CreateDirectory(restorePointPath);
+        List<IStorage> storages = StorageAlgorithm.Store(_currentBackupObjects,  Repository);
 
-        StorageAlgorithm.Store(restorePointPath, _currentBackupObjects, Repository);
-        var restorePoint = new RestorePoint(DateTime.Now, Guid.NewGuid());
-
+        var restorePointBuilder = RestorePoint.Builder;
         foreach (BackupObject currentBackupObject in _currentBackupObjects)
         {
-            restorePoint.AddBackupObject(currentBackupObject);
+            restorePointBuilder.AddBackupObject(currentBackupObject);
         }
 
-        _backup.AddRestorePoint(restorePoint);
+        RestorePoint restorePoint = restorePointBuilder.Build();
+        _restorePoints.Add(restorePoint);
         return restorePoint;
     }
 

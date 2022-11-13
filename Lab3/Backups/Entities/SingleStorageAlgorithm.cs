@@ -13,16 +13,10 @@ public class SingleStorageAlgorithm : IStorageAlgorithm
         _archiver = archiver;
     }
 
-    public void Store(string path, List<BackupObject> backupObjects, IRepository repository)
+    public IStorage Store(List<BackupObject> backupObjects, IRepository repository, string path)
     {
-        Stream sourceOut = repository.GetStream(path);
-        foreach (BackupObject backupObject in backupObjects)
-        {
-            Stream sourceIn = backupObject.Repository.GetStream(backupObject.PathFromRepToObject);
-            _archiver.Encode(sourceIn, sourceOut, "storage.zip");
-            sourceIn.Close();
-        }
-
-        sourceOut.Close();
+        var repositoryObjects = backupObjects
+            .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
+        return _archiver.Encode(repositoryObjects, repository, path);
     }
 }
