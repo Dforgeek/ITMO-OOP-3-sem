@@ -14,6 +14,12 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
 
     public IStorage Store(List<BackupObject> backupObjects, IRepository repository, string path)
     {
-        throw new NotImplementedException();
+        var repositoryObjects = backupObjects
+            .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
+
+        var storages = repositoryObjects
+            .Select(repositoryObject => _archiver.Encode(repositoryObjects, repository, path)).ToList();
+
+        return new SplitStorage(storages);
     }
 }

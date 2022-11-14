@@ -18,7 +18,7 @@ public class ZipStorage : IStorage
     public IReadOnlyCollection<IZipObject> ZipObjects => _zipObjects.AsReadOnly();
     public List<IRepositoryObject> GetRepositoryObjects()
     {
-        ZipArchive zipArchive = new ZipArchive(Repository.OpenRead(PathToArchiveFromRepository), ZipArchiveMode.Create);
+        var zipArchive = new ZipArchive(Repository.OpenRead(PathToArchiveFromRepository), ZipArchiveMode.Create);
         var repositoryObjects = new List<IRepositoryObject>();
         foreach (IZipObject zipObject in _zipObjects)
         {

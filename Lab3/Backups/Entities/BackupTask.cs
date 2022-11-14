@@ -27,10 +27,10 @@ public class BackupTask
 
     public RestorePoint AddRestorePoint()
     {
-        string restorePointPath = Path.Combine(BackupTaskPath, DateTime.Now.ToString());
-        List<IStorage> storages = StorageAlgorithm.Store(_currentBackupObjects, Repository);
+        string restorePointPath = Path.Combine(BackupTaskPath, DateTime.Now.ToString()); // TODO: make normal hierarchy of storing restorePoints
+        IStorage storages = StorageAlgorithm.Store(_currentBackupObjects, Repository, restorePointPath);
 
-        var restorePointBuilder = RestorePoint.Builder;
+        RestorePoint.RestorePointBuilder restorePointBuilder = RestorePoint.Builder;
         foreach (BackupObject currentBackupObject in _currentBackupObjects)
         {
             restorePointBuilder.AddBackupObject(currentBackupObject);

@@ -4,21 +4,21 @@ namespace Backups.Entities;
 
 public class SplitStorage : IStorage
 {
-    private readonly List<ZipStorage> _zipStorages;
+    private readonly List<IStorage> _storages;
 
-    public SplitStorage(List<ZipStorage> zipStorages)
+    public SplitStorage(List<IStorage> zipStorages)
     {
-        _zipStorages = new List<ZipStorage>();
+        _storages = new List<IStorage>();
     }
 
-    public IReadOnlyCollection<ZipStorage> ZipStorages => _zipStorages.AsReadOnly();
+    public IReadOnlyCollection<IStorage> Storages => _storages.AsReadOnly();
 
     public List<IRepositoryObject> GetRepositoryObjects()
     {
         var repositoryObjects = new List<IRepositoryObject>();
-        foreach (ZipStorage zipStorage in _zipStorages)
+        foreach (IStorage storage in _storages)
         {
-            repositoryObjects.AddRange(zipStorage.GetRepositoryObjects());
+            repositoryObjects.AddRange(storage.GetRepositoryObjects());
         }
 
         return repositoryObjects;
