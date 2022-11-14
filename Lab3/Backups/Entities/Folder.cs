@@ -5,15 +5,13 @@ namespace Backups.Entities;
 public class Folder : IFolder
 {
     private Func<IReadOnlyCollection<IRepositoryObject>> _functor;
-    public Folder(IRepository repository, string path, Func<IReadOnlyCollection<IRepositoryObject>> functor)
+    public Folder(string name, Func<IReadOnlyCollection<IRepositoryObject>> functor)
     {
-        Repository = repository;
-        Name = path;
+        Name = name;
         _functor = functor;
     }
 
     public string Name { get; }
-    public IRepository Repository { get; }
 
     public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {
@@ -22,6 +20,6 @@ public class Folder : IFolder
 
     public void Accept(IRepositoryObjectVisitor repositoryObjectVisitor)
     {
-        throw new NotImplementedException();
+        repositoryObjectVisitor.Visit(this);
     }
 }

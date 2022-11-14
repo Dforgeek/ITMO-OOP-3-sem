@@ -25,7 +25,7 @@ public class ZipStorage : IStorage
             foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
             {
                 if (zipArchiveEntry.Name == zipObject.Name)
-                    repositoryObjects.Add(zipObject.GetIRepositoryObject(zipArchiveEntry));
+                    repositoryObjects.Add(zipObject.GetIRepositoryObject());
             }
         }
 

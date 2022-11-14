@@ -9,14 +9,9 @@ public class BackupTask
     private readonly List<BackupObject> _currentBackupObjects;
     private readonly List<RestorePoint> _restorePoints;
 
-    public BackupTask(string name, string backupTaskPath, IRepository repository, IStorageAlgorithm storageAlgorithm,
-        Guid id)
+    public BackupTask(string backupTaskPath, IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new Exception();
-
-        Name = name;
-        BackupTaskPath = Path.Combine(backupTaskPath, name);
+        BackupTaskPath = backupTaskPath;
         StorageAlgorithm = storageAlgorithm;
         Id = id;
         _restorePoints = new List<RestorePoint>();
@@ -27,14 +22,13 @@ public class BackupTask
     public Guid Id { get; }
     public IRepository Repository { get; }
     public IStorageAlgorithm StorageAlgorithm { get; }
-    public string Name { get; }
     public string BackupTaskPath { get; }
     public IReadOnlyCollection<RestorePoint> RestorePoints => _restorePoints.AsReadOnly();
 
     public RestorePoint AddRestorePoint()
     {
         string restorePointPath = Path.Combine(BackupTaskPath, DateTime.Now.ToString());
-        List<IStorage> storages = StorageAlgorithm.Store(_currentBackupObjects,  Repository);
+        List<IStorage> storages = StorageAlgorithm.Store(_currentBackupObjects, Repository);
 
         var restorePointBuilder = RestorePoint.Builder;
         foreach (BackupObject currentBackupObject in _currentBackupObjects)

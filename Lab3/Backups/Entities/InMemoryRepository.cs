@@ -28,7 +28,12 @@ public class InMemoryRepository : IRepository
         throw new NotImplementedException();
     }
 
-    public Stream OpenWrite()
+    public Stream OpenWrite(string path)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Stream OpenRead(string path)
     {
         throw new NotImplementedException();
     }

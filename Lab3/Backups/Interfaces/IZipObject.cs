@@ -5,5 +5,5 @@ namespace Backups.Interfaces;
 public interface IZipObject
 {
     string Name { get; }
-    IRepositoryObject GetIRepositoryObject(ZipArchiveEntry zipArchiveEntry);
+    IRepositoryObject GetIRepositoryObject();
 }

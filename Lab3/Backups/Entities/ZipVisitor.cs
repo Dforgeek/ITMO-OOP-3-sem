@@ -34,7 +34,7 @@ public class ZipVisitor : IRepositoryObjectVisitor
             }
         }
 
-        var zipFile = new ZipFile(Path.GetFileName(file.Name));
+        var zipFile = new ZipFile(file.Name, entry);
         _zipObjectLists.Peek().Add(zipFile);
     }
 

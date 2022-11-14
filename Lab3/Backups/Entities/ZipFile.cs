@@ -5,17 +5,17 @@ namespace Backups.Entities;
 
 public class ZipFile : IZipObject
 {
-    public ZipFile(string name)
+    private ZipArchiveEntry _zipArchiveEntry;
+    public ZipFile(string name, ZipArchiveEntry entry)
     {
+        _zipArchiveEntry = entry;
         Name = name;
     }
 
     public string Name { get; }
 
-    public IRepositoryObject GetIRepositoryObject(ZipArchiveEntry zipArchiveEntry)
+    public IRepositoryObject GetIRepositoryObject()
     {
-        if (zipArchiveEntry.Name != Name)
-            throw new Exception();
-        return new File(Name, zipArchiveEntry.Open);
+        return new File(Name, _zipArchiveEntry.Open);
     }
 }
