@@ -11,23 +11,31 @@ public class FileSystemRepository : IRepository
     }
 
     public string PathToRepository { get; }
-    public bool ValidatePathInsideRepository(string pathToObjectFromRepository)
-    {
-        throw new NotImplementedException();
-    }
 
     public IRepositoryObject GetRepositoryObject(BackupObject backupObject)
     {
-        throw new NotImplementedException();
+        if (System.IO.File.Exists(backupObject.Path))
+            return new File(Path.GetFileName(backupObject.Path), () => OpenRead(backupObject.Path));
+        if (Directory.Exists(backupObject.Path))
+        {
+            return new Folder(Path.GetFileName(backupObject.Path), () =>
+            {
+                return Directory
+                    .EnumerateFileSystemEntries(backupObject.Path, searchPattern: "*", SearchOption.TopDirectoryOnly)
+                    .Select(repoObj => GetRepositoryObject(new BackupObject(this, repoObj))).ToList();
+            });
+        }
+
+        throw new Exception();
     }
 
     public Stream OpenWrite(string path)
     {
-        throw new NotImplementedException();
+        return System.IO.File.OpenWrite(path);
     }
 
     public Stream OpenRead(string path)
     {
-        throw new NotImplementedException();
+        return System.IO.File.OpenRead(path);
     }
 }

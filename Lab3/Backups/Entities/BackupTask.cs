@@ -41,24 +41,24 @@ public class BackupTask
         return restorePoint;
     }
 
-    public BackupObject? FindBackupObject(Guid backupObjectId)
+    public BackupObject? FindBackupObject(string backupObjectPath)
     {
-        return _currentBackupObjects.FirstOrDefault(backupObject => backupObject.Id == backupObjectId);
+        return _currentBackupObjects.FirstOrDefault(backupObject => backupObjectPath == backupObject.Path);
     }
 
-    public BackupObject GetBackupObject(Guid backupObjectId)
+    public BackupObject GetBackupObject(string backupObjectPath)
     {
-        return FindBackupObject(backupObjectId) ?? throw new Exception();
+        return FindBackupObject(backupObjectPath) ?? throw new Exception();
     }
 
     public BackupObject AddBackupObject(string path)
     {
-        _currentBackupObjects.Add(new BackupObject(Repository, path, Id));
+        _currentBackupObjects.Add(new BackupObject(Repository, path));
         return _currentBackupObjects.Last();
     }
 
-    public void DeleteBackupObject(Guid backupObjectId)
+    public void DeleteBackupObject(string backupObjectPath)
     {
-        _currentBackupObjects.Remove(GetBackupObject(backupObjectId));
+        _currentBackupObjects.Remove(GetBackupObject(backupObjectPath));
     }
 }

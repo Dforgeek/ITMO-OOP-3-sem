@@ -13,7 +13,7 @@ public class SplitStorage : IStorage
 
     public IReadOnlyCollection<IStorage> Storages => _storages.AsReadOnly();
 
-    public List<IRepositoryObject> GetRepositoryObjects()
+    public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {
         var repositoryObjects = new List<IRepositoryObject>();
         foreach (IStorage storage in _storages)
@@ -21,6 +21,6 @@ public class SplitStorage : IStorage
             repositoryObjects.AddRange(storage.GetRepositoryObjects());
         }
 
-        return repositoryObjects;
+        return repositoryObjects.AsReadOnly();
     }
 }

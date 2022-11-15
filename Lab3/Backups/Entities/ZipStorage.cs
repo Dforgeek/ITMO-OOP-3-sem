@@ -16,19 +16,8 @@ public class ZipStorage : IStorage
     public IRepository Repository { get; }
     public string PathToArchiveFromRepository { get; }
     public IReadOnlyCollection<IZipObject> ZipObjects => _zipObjects.AsReadOnly();
-    public List<IRepositoryObject> GetRepositoryObjects()
+    public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {
-        var zipArchive = new ZipArchive(Repository.OpenRead(PathToArchiveFromRepository), ZipArchiveMode.Create);
-        var repositoryObjects = new List<IRepositoryObject>();
-        foreach (IZipObject zipObject in _zipObjects)
-        {
-            foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
-            {
-                if (zipArchiveEntry.Name == zipObject.Name)
-                    repositoryObjects.Add(zipObject.GetIRepositoryObject());
-            }
-        }
-
-        return repositoryObjects;
+        return _zipObjects.Select(zipObject => zipObject.GetIRepositoryObject()).ToList();
     }
 }

@@ -4,19 +4,15 @@ namespace Backups.Models;
 
 public class BackupObject
 {
-    public BackupObject(IRepository repository, string pathFromRepToObject, Guid id)
+    public BackupObject(IRepository repository, string path)
     {
-        if (repository.ValidatePathInsideRepository(pathFromRepToObject))
+        if (string.IsNullOrWhiteSpace(path))
             throw new Exception();
-        if (string.IsNullOrWhiteSpace(pathFromRepToObject))
-            throw new Exception();
-        PathFromRepToObject = pathFromRepToObject;
-        Id = id;
+        Path = path;
         Repository = repository;
     }
 
-    public Guid Id { get; }
-    public string PathFromRepToObject { get; }
+    public string Path { get; }
     public IRepository Repository { get; }
 
     public IRepositoryObject GetRepositoryObject()
