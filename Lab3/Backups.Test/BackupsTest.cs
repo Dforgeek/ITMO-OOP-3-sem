@@ -17,11 +17,12 @@ public class BackupsTest
 
         var archiver = new ZipArchiver();
         var algo = new SingleStorageAlgorithm(archiver);
+        var backup = new Backup();
         const string pathToWorkRep = @"\Work";
         var workRepository = new InMemoryRepository(pathToWorkRep, fs);
         const string pathToArchive = @"\Archive";
         var archiveRepository = new InMemoryRepository(pathToArchive, fs);
-        var backupTask = new BackupTask(archiveRepository, algo, Guid.NewGuid());
+        var backupTask = new BackupTask(backup, archiveRepository, algo, Guid.NewGuid());
         backupTask.AddBackupObject(workRepository, @"\Work\temp.txt");
         RestorePoint rp = backupTask.AddRestorePoint();
         Assert.True(fs.FileExists(@$"\Archive\{rp.DateTime.ToString("dd-MM-yyyy.hh-mm")}.zip"));

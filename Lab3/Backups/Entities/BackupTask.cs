@@ -9,14 +9,13 @@ namespace Backups.Entities;
 public class BackupTask
 {
     private readonly List<BackupObject> _currentBackupObjects;
-    private readonly List<RestorePoint> _restorePoints;
-
-    public BackupTask(IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
+    private readonly IBackup _backup;
+    public BackupTask(IBackup backup, IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
     {
         BackupTaskPath = repository.PathToRepository;
         StorageAlgorithm = storageAlgorithm;
         Id = id;
-        _restorePoints = new List<RestorePoint>();
+        _backup = backup;
         _currentBackupObjects = new List<BackupObject>();
         Repository = repository;
     }
@@ -25,7 +24,7 @@ public class BackupTask
     public IRepository Repository { get; }
     public IStorageAlgorithm StorageAlgorithm { get; }
     public string BackupTaskPath { get; }
-    public IReadOnlyCollection<RestorePoint> RestorePoints => _restorePoints.AsReadOnly();
+    public IReadOnlyCollection<RestorePoint> RestorePoints => _backup.RestorePoints;
 
     public RestorePoint AddRestorePoint()
     {
@@ -39,8 +38,18 @@ public class BackupTask
         }
 
         RestorePoint restorePoint = restorePointBuilder.Build();
-        _restorePoints.Add(restorePoint);
+        _backup.AddRestorePoint(restorePoint);
         return restorePoint;
+    }
+
+    public RestorePoint GetRestorePoint(Guid id)
+    {
+        return _backup.GetRestorePoint(id);
+    }
+
+    public void DeleteRestorePoint(Guid id)
+    {
+        _backup.DeleteRestorePint(id);
     }
 
     public BackupObject? FindBackupObject(string backupObjectPath)
