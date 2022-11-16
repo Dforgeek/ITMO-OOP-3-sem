@@ -4,7 +4,7 @@ namespace Backups.Entities;
 
 public class File : IFile
 {
-    private Func<Stream> _streamFunctor;
+    private readonly Func<Stream> _streamFunctor;
 
     public File(string name, Func<Stream> streamFunctor)
     {
