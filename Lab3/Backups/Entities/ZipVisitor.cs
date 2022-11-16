@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Backups.Exceptions;
 using Backups.Interfaces;
 
 namespace Backups.Entities;
@@ -19,7 +20,7 @@ public class ZipVisitor : IRepositoryObjectVisitor
     public List<IZipObject> ZipObjects()
     {
         if (_zipObjectLists.Count != 1)
-            throw new Exception();
+            throw ZipVisitorException.MoreThanOneLayerOfZipObjectList_InvariantCorrupted();
         return _zipObjectLists.Peek();
     }
 

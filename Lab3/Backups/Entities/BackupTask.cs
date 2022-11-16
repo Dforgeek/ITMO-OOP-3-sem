@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Net.Http.Headers;
+using Backups.Exceptions;
 using Backups.Interfaces;
 using Backups.Models;
 
@@ -49,7 +50,7 @@ public class BackupTask
 
     public BackupObject GetBackupObject(string backupObjectPath)
     {
-        return FindBackupObject(backupObjectPath) ?? throw new Exception();
+        return FindBackupObject(backupObjectPath) ?? throw BackupTaskException.NoSuchBackupObject();
     }
 
     public BackupObject AddBackupObject(IRepository repository, string path)

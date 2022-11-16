@@ -1,4 +1,5 @@
-﻿using Backups.Interfaces;
+﻿using Backups.Exceptions;
+using Backups.Interfaces;
 using Backups.Models;
 
 namespace Backups.Entities;
@@ -38,7 +39,7 @@ public class RestorePoint
         public void AddBackupObject(BackupObject backupObject)
         {
             if (_backupObjects.Contains(backupObject))
-                throw new Exception();
+                throw RestorePointException.BackupObjectAlreadyInRestorePoint();
             _backupObjects.Add(backupObject);
         }
 
@@ -49,7 +50,7 @@ public class RestorePoint
 
         public RestorePoint Build()
         {
-            var newRestorePoint = new RestorePoint(DateTime.Now, Guid.NewGuid(), _backupObjects, _storage);
+            var newRestorePoint = new RestorePoint(_dateTime, Guid.NewGuid(), _backupObjects, _storage);
             Reset();
             return newRestorePoint;
         }
