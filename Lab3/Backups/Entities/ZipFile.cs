@@ -1,21 +1,19 @@
 ﻿using System.IO.Compression;
+using System.Net.Http.Headers;
 using Backups.Interfaces;
 
 namespace Backups.Entities;
 
 public class ZipFile : IZipObject
 {
-    private ZipArchiveEntry _zipArchiveEntry;
-    public ZipFile(string name, ZipArchiveEntry entry)
+    public ZipFile(string name)
     {
-        _zipArchiveEntry = entry;
         Name = name;
     }
 
     public string Name { get; }
-
-    public IRepositoryObject GetIRepositoryObject()
+    public IRepositoryObject GetIRepositoryObject(ZipArchive zipArchive)
     {
-        return new File(Name, _zipArchiveEntry.Open);
+        return new File(Name, () => zipArchive.GetEntry(Name) !.Open());
     }
 }

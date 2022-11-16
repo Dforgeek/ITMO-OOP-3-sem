@@ -1,3 +1,4 @@
+using System.IO.Enumeration;
 using Backups.Interfaces;
 using Backups.Models;
 
@@ -12,14 +13,21 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
         _archiver = archiver;
     }
 
-    public IStorage Store(List<BackupObject> backupObjects, IRepository repository, string path)
+    public IStorage Store(List<BackupObject> backupObjects, IRepository repository, string path, DateTime dateTime)
     {
         var repositoryObjects = backupObjects
             .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
+        var storages = new List<IStorage>();
+        foreach (IRepositoryObject repositoryObject in repositoryObjects)
+        {
+            string concreteZipFilePath = Path
+                .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.Name}.zip"));
 
-        var storages = repositoryObjects
-            .Select(repositoryObject => _archiver.Encode(repositoryObjects, repository, path)).ToList();
+            var temp = new List<IRepositoryObject> { repositoryObject };
+            storages.Add(_archiver
+                .Encode(new List<IRepositoryObject>(temp), repository, concreteZipFilePath));
+        }
 
-        return new SplitStorage(storages);
+        return new SplitStorage(repository, path, storages);
     }
 }

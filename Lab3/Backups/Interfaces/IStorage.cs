@@ -2,5 +2,6 @@
 
 public interface IStorage
 {
+    string PathToStorage { get; }
     IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects();
 }

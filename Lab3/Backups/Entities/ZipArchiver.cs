@@ -18,6 +18,9 @@ public class ZipArchiver : IArchiver
             repositoryObject.Accept(zipVisitor);
         }
 
-        return new ZipStorage(repository, path, zipVisitor.ZipObjects());
+        ZipStorage zipStorage = new ZipStorage(repository, path, zipVisitor.ZipObjects());
+        zipArchive.Dispose();
+        writeStream.Dispose();
+        return zipStorage;
     }
 }

@@ -6,12 +6,17 @@ public class SplitStorage : IStorage
 {
     private readonly List<IStorage> _storages;
 
-    public SplitStorage(List<IStorage> zipStorages)
+    public SplitStorage(IRepository repository, string pathToStorage, List<IStorage> zipStorages)
     {
         _storages = new List<IStorage>();
+        PathToStorage = pathToStorage;
+        Repository = repository;
     }
 
     public IReadOnlyCollection<IStorage> Storages => _storages.AsReadOnly();
+
+    public string PathToStorage { get; }
+    public IRepository Repository { get; }
 
     public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {

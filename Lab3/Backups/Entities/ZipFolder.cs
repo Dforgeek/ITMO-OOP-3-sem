@@ -16,8 +16,10 @@ public class ZipFolder : IZipObject
     public string Name { get; }
     public IReadOnlyCollection<IZipObject> ZipObjects => _zipObjects.AsReadOnly();
 
-    public IRepositoryObject GetIRepositoryObject()
+    public IRepositoryObject GetIRepositoryObject(ZipArchive zipArchive)
     {
-        return new Folder(Name, () => _zipObjects.Select(x => x.GetIRepositoryObject()).ToList().AsReadOnly());
+        var zipArchiveTemp = new ZipArchive(zipArchive.GetEntry(Name) !.Open(), ZipArchiveMode.Read);
+        return new Folder(Name, () => _zipObjects
+            .Select(x => x.GetIRepositoryObject(zipArchiveTemp)).ToList().AsReadOnly());
     }
 }

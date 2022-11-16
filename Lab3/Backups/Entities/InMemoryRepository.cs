@@ -37,7 +37,7 @@ public class InMemoryRepository : IRepository
 
     public Stream OpenWrite(string path)
     {
-        return _fileSystem.OpenFile(path, FileMode.Open, FileAccess.Write, FileShare.Write);
+        return _fileSystem.OpenFile(path, FileMode.Create, FileAccess.Write, FileShare.Write);
     }
 
     public Stream OpenRead(string path)

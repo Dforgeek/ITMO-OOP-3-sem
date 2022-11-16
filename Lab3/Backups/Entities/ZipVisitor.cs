@@ -34,15 +34,14 @@ public class ZipVisitor : IRepositoryObjectVisitor
             }
         }
 
-        var zipFile = new ZipFile(file.Name, entry);
+        var zipFile = new ZipFile(file.Name);
         _zipObjectLists.Peek().Add(zipFile);
     }
 
     public void Visit(IFolder folder)
     {
         ZipArchiveEntry entry = _zipArchives.Peek().CreateEntry(Path.GetFileName(folder.Name));
-        var zipArchive = new ZipArchive(entry.Open(), ZipArchiveMode.Create);
-
+        using var zipArchive = new ZipArchive(entry.Open(), ZipArchiveMode.Create);
         _zipArchives.Push(zipArchive);
         _zipObjectLists.Push(new List<IZipObject>());
 

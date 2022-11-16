@@ -1,4 +1,5 @@
-﻿using Backups.Models;
+﻿using Backups.Interfaces;
+using Backups.Models;
 
 namespace Backups.Entities;
 
@@ -6,26 +7,32 @@ public class RestorePoint
 {
     private readonly List<BackupObject> _backupObjects;
 
-    private RestorePoint(DateTime dateTime, Guid id, List<BackupObject> backupObjects)
+    private RestorePoint(DateTime dateTime, Guid id, List<BackupObject> backupObjects, IStorage storage)
     {
         DateTime = dateTime;
         Id = id;
         _backupObjects = backupObjects;
+        Storage = storage;
     }
 
-    public static RestorePointBuilder Builder => new RestorePointBuilder();
+    public IStorage Storage { get; }
     public IReadOnlyList<BackupObject> BackupObjects => _backupObjects.AsReadOnly();
     public DateTime DateTime { get; }
 
     public Guid Id { get; }
+    public static RestorePointBuilder Builder(IStorage storage, DateTime dateTime) => new RestorePointBuilder(storage, dateTime);
 
     public class RestorePointBuilder
     {
         private List<BackupObject> _backupObjects;
+        private IStorage _storage;
+        private DateTime _dateTime;
 
-        public RestorePointBuilder()
+        public RestorePointBuilder(IStorage storage, DateTime dateTime)
         {
             _backupObjects = new List<BackupObject>();
+            _storage = storage;
+            _dateTime = dateTime;
         }
 
         public void AddBackupObject(BackupObject backupObject)
@@ -42,7 +49,7 @@ public class RestorePoint
 
         public RestorePoint Build()
         {
-            var newRestorePoint = new RestorePoint(DateTime.Now, Guid.NewGuid(), _backupObjects);
+            var newRestorePoint = new RestorePoint(DateTime.Now, Guid.NewGuid(), _backupObjects, _storage);
             Reset();
             return newRestorePoint;
         }

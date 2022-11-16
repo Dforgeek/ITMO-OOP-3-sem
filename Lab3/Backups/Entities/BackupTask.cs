@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
 using Backups.Interfaces;
 using Backups.Models;
 
@@ -9,9 +10,9 @@ public class BackupTask
     private readonly List<BackupObject> _currentBackupObjects;
     private readonly List<RestorePoint> _restorePoints;
 
-    public BackupTask(string backupTaskPath, IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
+    public BackupTask(IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
     {
-        BackupTaskPath = backupTaskPath;
+        BackupTaskPath = repository.PathToRepository;
         StorageAlgorithm = storageAlgorithm;
         Id = id;
         _restorePoints = new List<RestorePoint>();
@@ -27,10 +28,10 @@ public class BackupTask
 
     public RestorePoint AddRestorePoint()
     {
-        string restorePointPath = Path.Combine(BackupTaskPath, DateTime.Now.ToString()); // TODO: make normal hierarchy of storing restorePoints
-        IStorage storages = StorageAlgorithm.Store(_currentBackupObjects, Repository, restorePointPath);
+        DateTime dateTime = DateTime.Now;
+        IStorage storage = StorageAlgorithm.Store(_currentBackupObjects, Repository, BackupTaskPath, dateTime);
 
-        RestorePoint.RestorePointBuilder restorePointBuilder = RestorePoint.Builder;
+        RestorePoint.RestorePointBuilder restorePointBuilder = RestorePoint.Builder(storage, dateTime);
         foreach (BackupObject currentBackupObject in _currentBackupObjects)
         {
             restorePointBuilder.AddBackupObject(currentBackupObject);
@@ -51,9 +52,9 @@ public class BackupTask
         return FindBackupObject(backupObjectPath) ?? throw new Exception();
     }
 
-    public BackupObject AddBackupObject(string path)
+    public BackupObject AddBackupObject(IRepository repository, string path)
     {
-        _currentBackupObjects.Add(new BackupObject(Repository, path));
+        _currentBackupObjects.Add(new BackupObject(repository, path));
         return _currentBackupObjects.Last();
     }
 

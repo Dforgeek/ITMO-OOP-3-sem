@@ -6,18 +6,21 @@ namespace Backups.Entities;
 public class ZipStorage : IStorage
 {
     private readonly List<IZipObject> _zipObjects;
-    public ZipStorage(IRepository repository, string pathToArchiveFromRepository, List<IZipObject> zipObjects)
+    public ZipStorage(IRepository repository, string pathToStorage, List<IZipObject> zipObjects)
     {
         Repository = repository;
-        PathToArchiveFromRepository = pathToArchiveFromRepository;
+        PathToStorage = pathToStorage;
         _zipObjects = zipObjects;
     }
 
     public IRepository Repository { get; }
-    public string PathToArchiveFromRepository { get; }
     public IReadOnlyCollection<IZipObject> ZipObjects => _zipObjects.AsReadOnly();
+    public string PathToStorage { get; }
+
     public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {
-        return _zipObjects.Select(zipObject => zipObject.GetIRepositoryObject()).ToList();
+        Stream archiveStream = Repository.OpenRead(PathToStorage);
+        var zipArchive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
+        return _zipObjects.Select(zipObject => zipObject.GetIRepositoryObject(zipArchive)).ToList();
     }
 }
