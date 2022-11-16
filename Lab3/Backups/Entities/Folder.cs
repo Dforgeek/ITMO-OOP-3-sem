@@ -4,7 +4,7 @@ namespace Backups.Entities;
 
 public class Folder : IFolder
 {
-    private Func<IReadOnlyCollection<IRepositoryObject>> _functor;
+    private readonly Func<IReadOnlyCollection<IRepositoryObject>> _functor;
     public Folder(string name, Func<IReadOnlyCollection<IRepositoryObject>> functor)
     {
         Name = name;
