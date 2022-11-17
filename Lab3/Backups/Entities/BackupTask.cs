@@ -10,14 +10,14 @@ public class BackupTask
 {
     private readonly List<BackupObject> _currentBackupObjects;
     private readonly IBackup _backup;
-    public BackupTask(IBackup backup, IRepository repository, IStorageAlgorithm storageAlgorithm, Guid id)
+    public BackupTask(IBackup backup, Configuration configuration, Guid id)
     {
-        BackupTaskPath = repository.PathToRepository;
-        StorageAlgorithm = storageAlgorithm;
+        BackupTaskPath = configuration.Repository.PathToRepository;
+        StorageAlgorithm = configuration.StorageAlgorithm;
         Id = id;
         _backup = backup;
         _currentBackupObjects = new List<BackupObject>();
-        Repository = repository;
+        Repository = configuration.Repository;
     }
 
     public Guid Id { get; }
