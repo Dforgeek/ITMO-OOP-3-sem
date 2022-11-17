@@ -5,7 +5,7 @@ namespace Backups.Interfaces;
 public interface IRepository
 {
     string PathToRepository { get; }
-    IRepositoryObject GetRepositoryObject(BackupObject backupObject);
+    IRepositoryObject GetRepositoryObject(string path);
 
     Stream OpenWrite(string path);
     Stream OpenRead(string path);
