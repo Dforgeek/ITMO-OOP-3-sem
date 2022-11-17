@@ -26,7 +26,7 @@ public class Backup : IBackup
         _restorePoints.Add(restorePoint);
     }
 
-    public void DeleteRestorePint(Guid id)
+    public void DeleteRestorePoint(Guid id)
     {
         _restorePoints.Remove(GetRestorePoint(id));
     }

@@ -38,4 +38,9 @@ public class FileSystemRepository : IRepository
     {
         return System.IO.File.OpenRead(path);
     }
+
+    public void Delete(string path)
+    {
+        Directory.Delete(path, true);
+    }
 }
