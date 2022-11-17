@@ -6,7 +6,7 @@ using Backups.Models;
 
 namespace Backups.Entities;
 
-public class BackupTask
+public class BackupTask : IBackupTask
 {
     private readonly List<BackupObject> _currentBackupObjects;
     private readonly IBackup _backup;
