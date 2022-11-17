@@ -18,17 +18,17 @@ public class InMemoryRepository : IRepository
 
     public string PathToRepository { get; }
 
-    public IRepositoryObject GetRepositoryObject(BackupObject backupObject)
+    public IRepositoryObject GetRepositoryObject(string path)
     {
-        if (_fileSystem.FileExists(backupObject.Path))
-            return new File(Path.GetFileName(backupObject.Path), () => OpenRead(backupObject.Path));
-        if (_fileSystem.DirectoryExists(backupObject.Path))
+        if (_fileSystem.FileExists(path))
+            return new File(Path.GetFileName(path), () => OpenRead(path));
+        if (_fileSystem.DirectoryExists(path))
         {
-            return new Folder(Path.GetFileName(backupObject.Path), () =>
+            return new Folder(GetFileName(path), () =>
             {
                 return Directory
-                    .EnumerateFileSystemEntries(backupObject.Path, searchPattern: "*", SearchOption.TopDirectoryOnly)
-                    .Select(repoObj => GetRepositoryObject(new BackupObject(this, repoObj))).ToList();
+                    .EnumerateFileSystemEntries(path, searchPattern: "*", SearchOption.TopDirectoryOnly)
+                    .Select(repoObj => GetRepositoryObject(path)).ToList();
             });
         }
 
