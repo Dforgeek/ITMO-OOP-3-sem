@@ -14,7 +14,7 @@ public class BackupTaskExtra
         _backup = backup;
         Logger = logger;
         RestorePointControl = restorePointControl;
-        _backupTask = new BackupTask(_backup, repository, storageAlgorithm, id);
+        _backupTask = new BackupTask(_backup, new Configuration(repository, storageAlgorithm), id);
     }
 
     public Guid Id => _backupTask.Id;
@@ -26,6 +26,6 @@ public class BackupTaskExtra
 
     public BackupTaskExtraMemento GetMemento()
     {
-        
+        return new BackupTaskExtraMemento(_backup, Repository, StorageAlgorithm, Logger, RestorePointControl, Id);
     }
 }
