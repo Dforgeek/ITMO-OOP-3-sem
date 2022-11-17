@@ -49,7 +49,9 @@ public class BackupTask : IBackupTask
 
     public void DeleteRestorePoint(Guid id)
     {
-        _backup.DeleteRestorePint(id);
+        RestorePoint restorePoint = GetRestorePoint(id);
+        Repository.Delete(restorePoint.Storage.PathToStorage);
+        _backup.DeleteRestorePoint(id);
     }
 
     public BackupObject? FindBackupObject(string backupObjectPath)

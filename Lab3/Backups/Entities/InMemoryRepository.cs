@@ -44,4 +44,9 @@ public class InMemoryRepository : IRepository
     {
         return _fileSystem.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.Read);
     }
+
+    public void Delete(string path)
+    {
+        _fileSystem.DeleteDirectory(path, true);
+    }
 }
