@@ -17,6 +17,6 @@ public class BackupObject
 
     public IRepositoryObject GetRepositoryObject()
     {
-        return Repository.GetRepositoryObject(this);
+        return Repository.GetRepositoryObject(Path);
     }
 }
