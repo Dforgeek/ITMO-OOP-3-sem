@@ -5,7 +5,7 @@ using Backups.Interfaces;
 
 namespace Backups.Extra.Entities;
 
-public class BackupTaskExtraMemento
+public class BackupTaskMemento
 {
     private IBackup _backup;
     private IRepository _repository;
@@ -14,7 +14,7 @@ public class BackupTaskExtraMemento
     private ILogger _logger;
     private IRestorePointControl _restorePointControl;
 
-    public BackupTaskExtraMemento(IBackup backup, IRepository repository, IStorageAlgorithm storageAlgorithm, ILogger logger, IRestorePointControl restorePointControl, Guid id)
+    public BackupTaskMemento(IBackup backup, IRepository repository, IStorageAlgorithm storageAlgorithm, ILogger logger, IRestorePointControl restorePointControl, Guid id)
     {
         _backup = backup;
         _id = id;
@@ -24,8 +24,8 @@ public class BackupTaskExtraMemento
         _logger = logger;
     }
 
-    public BackupTaskExtra DownloadBackupTask()
+    public BackupTaskDecorator DownloadBackupTask()
     {
-        return new BackupTaskExtra(_backup, _repository, _storageAlgorithm, _logger, _restorePointControl, _id);
+        return new BackupTaskDecorator(_backup, _repository, _storageAlgorithm, _logger, _restorePointControl, _id);
     }
 }

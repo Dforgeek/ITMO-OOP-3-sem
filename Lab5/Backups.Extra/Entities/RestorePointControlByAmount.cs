@@ -5,19 +5,21 @@ namespace Backups.Extra.Entities;
 
 public class RestorePointControlByAmount : IRestorePointControl
 {
-    public RestorePointControlByAmount(int amount)
+    public RestorePointControlByAmount(int maxAmount)
     {
-        if (amount < 0)
+        if (maxAmount < 0)
             throw new Exception();
-        Amount = amount;
+        MaxAmount = maxAmount;
     }
 
-    public int Amount { get; }
+    public int MaxAmount { get; }
 
-    public List<RestorePoint> UpdateRestorePoints(IReadOnlyCollection<RestorePoint> restorePoints)
+    public List<RestorePoint> GetRestorePointsToExclude(IReadOnlyCollection<RestorePoint> restorePoints)
     {
-        var newRestorePoints = new List<RestorePoint>(restorePoints);
-        newRestorePoints.RemoveRange(0, restorePoints.Count - Amount);
-        return newRestorePoints;
+        var restorePointsToExclude = new List<RestorePoint>(restorePoints);
+        restorePointsToExclude.RemoveRange(restorePoints.Count - MaxAmount, restorePoints.Count - 1);
+        if (restorePointsToExclude.Count == restorePoints.Count)
+            throw new Exception();
+        return restorePointsToExclude;
     }
 }

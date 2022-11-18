@@ -12,9 +12,13 @@ public class RestorePointControlByTimeSpan : IRestorePointControl
 
     public TimeSpan Interval { get; }
 
-    public List<RestorePoint> UpdateRestorePoints(IReadOnlyCollection<RestorePoint> restorePoints)
+    public List<RestorePoint> GetRestorePointsToExclude(IReadOnlyCollection<RestorePoint> restorePoints)
     {
         DateTime maxDateTime = restorePoints.Max(rp => rp.DateTime);
-        return restorePoints.Where(rp => maxDateTime - rp.DateTime < Interval).ToList();
+        var restorePointsToExclude = restorePoints
+            .Where(rp => maxDateTime - rp.DateTime > Interval).ToList();
+        if (restorePointsToExclude.Count == restorePoints.Count)
+            throw new Exception();
+        return restorePointsToExclude;
     }
 }
