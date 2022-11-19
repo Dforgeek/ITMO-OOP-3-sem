@@ -6,6 +6,7 @@ public class RestoreVisitor : IRepositoryObjectVisitor
 {
     public void Visit(IFile file)
     {
+        file.
     }
 
     public void Visit(IFolder folder)
