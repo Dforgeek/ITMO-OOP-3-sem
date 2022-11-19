@@ -5,12 +5,12 @@ using Backups.Interfaces;
 
 namespace Backups.Extra.Entities;
 
-public class BackupRestorePointControl : IBackup
+public class BackupWithLogger : IBackup
 {
     private readonly IRestorePointControl _restorePointControl;
     private List<RestorePoint> _restorePoints;
 
-    public BackupRestorePointControl(IRestorePointControl restorePointControl)
+    public BackupWithLogger(IRestorePointControl restorePointControl)
     {
         _restorePointControl = restorePointControl;
         _restorePoints = new List<RestorePoint>();
@@ -22,12 +22,17 @@ public class BackupRestorePointControl : IBackup
         if (_restorePoints.Contains(restorePoint))
             throw BackupException.RestorePointAlreadyInBackup();
         _restorePoints.Add(restorePoint);
-        _restorePoints = _restorePointControl.UpdateRestorePoints(_restorePoints);
+        _restorePoints = _restorePointControl.GetRestorePointsToExclude(_restorePoints);
     }
 
     public RestorePoint GetRestorePoint(Guid id)
     {
         return _restorePoints.FirstOrDefault(rp => rp.Id == id) ?? throw BackupException.NoSuchRestorePoint();
+    }
+
+    public void DeleteRestorePoint(Guid id)
+    {
+        throw new NotImplementedException();
     }
 
     public void DeleteRestorePint(Guid id)

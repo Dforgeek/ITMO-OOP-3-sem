@@ -9,5 +9,5 @@ public interface IBackup
     void AddRestorePoint(RestorePoint restorePoint);
     RestorePoint GetRestorePoint(Guid id);
 
-    void DeleteRestorePint(Guid id);
+    void DeleteRestorePoint(Guid id);
 }
