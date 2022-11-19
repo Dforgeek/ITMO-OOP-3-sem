@@ -15,6 +15,7 @@ public class BackupTaskDecorator : IBackupTask
     {
         Logger = configuration.Logger;
         RestorePointControl = configuration.RestorePointControl;
+        MergeHandler = configuration.MergeHandler;
         _backupTask = new BackupTask(backup, new Configuration(configuration.Repository, configuration.StorageAlgorithm), id);
         _mergeInsteadOfDelete = false;
         _backup = backup;
@@ -46,11 +47,6 @@ public class BackupTaskDecorator : IBackupTask
         }
     }
 
-    public BackupTaskMemento GetMemento()
-    {
-        // return new BackupTaskMemento(_backup, Repository, StorageAlgorithm, Logger, RestorePointControl, Id);
-    }
-
     public RestorePoint AddRestorePoint()
     {
         RestorePoint restorePoint = _backupTask.AddRestorePoint(); // TODO: merge instead of delete
@@ -70,6 +66,10 @@ public class BackupTaskDecorator : IBackupTask
         }
 
         return restorePoint;
+    }
+
+    public void Restore(Guid id)
+    {
     }
 
     public RestorePoint GetRestorePoint(Guid id)

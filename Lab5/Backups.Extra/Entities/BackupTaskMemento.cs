@@ -23,9 +23,4 @@ public class BackupTaskMemento
         _restorePointControl = restorePointControl;
         _logger = logger;
     }
-
-    public BackupTaskDecorator DownloadBackupTask()
-    {
-        return new BackupTaskDecorator(_backup, _repository, _storageAlgorithm, _logger, _restorePointControl, _id);
-    }
 }
