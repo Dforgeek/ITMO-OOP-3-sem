@@ -6,9 +6,9 @@ namespace Backups.Entities;
 
 public class ZipArchiver : IArchiver
 {
-    public IStorage Encode(IReadOnlyCollection<IRepositoryObject> repositoryObjects, IRepository repository, string path)
+    public IStorage Encode(IEnumerable<IRepositoryObject> repositoryObjects, IRepository repository, string path)
     {
-        Stream writeStream = repository.OpenWrite(path);
+        Stream writeStream = repository.OpenWrite(string.Concat(path, ".zip"));
         var zipArchive = new ZipArchive(writeStream, ZipArchiveMode.Create);
         var zipVisitor = new ZipVisitor(zipArchive);
         foreach (IRepositoryObject repositoryObject in repositoryObjects)

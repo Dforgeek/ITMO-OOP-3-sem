@@ -17,7 +17,7 @@ public class ZipVisitor : IRepositoryObjectVisitor
         _zipObjectLists.Push(new List<IZipObject>());
     }
 
-    public List<IZipObject> ZipObjects()
+    public IReadOnlyCollection<IZipObject> ZipObjects()
     {
         if (_zipObjectLists.Count != 1)
             throw ZipVisitorException.MoreThanOneLayerOfZipObjectList_InvariantCorrupted();
@@ -28,12 +28,8 @@ public class ZipVisitor : IRepositoryObjectVisitor
     {
         ZipArchiveEntry entry = _zipArchives.Peek().CreateEntry(Path.GetFileName(file.Name));
         using (Stream fileStream = file.GetStream())
-        {
-            using (Stream archiveStream = entry.Open())
-            {
-                fileStream.CopyTo(archiveStream);
-            }
-        }
+        using (Stream archiveStream = entry.Open())
+            fileStream.CopyTo(archiveStream);
 
         var zipFile = new ZipFile(file.Name);
         _zipObjectLists.Peek().Add(zipFile);

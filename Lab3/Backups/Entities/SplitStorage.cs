@@ -1,4 +1,5 @@
-﻿using Backups.Interfaces;
+﻿using System.IO.Compression;
+using Backups.Interfaces;
 
 namespace Backups.Entities;
 
@@ -8,7 +9,7 @@ public class SplitStorage : IStorage
 
     public SplitStorage(IRepository repository, string pathToStorage, List<IStorage> zipStorages)
     {
-        _storages = new List<IStorage>();
+        _storages = zipStorages;
         PathToStorage = pathToStorage;
         Repository = repository;
     }
@@ -18,14 +19,10 @@ public class SplitStorage : IStorage
     public string PathToStorage { get; }
     public IRepository Repository { get; }
 
-    public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
+    public IWrapper GetWrapper()
     {
-        var repositoryObjects = new List<IRepositoryObject>();
-        foreach (IStorage storage in _storages)
-        {
-            repositoryObjects.AddRange(storage.GetRepositoryObjects());
-        }
-
-        return repositoryObjects.AsReadOnly();
+        Stream archiveStream = ((IFile)Repository.GetRepositoryObject(PathToStorage)).GetStream();
+        var zipArchive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
+        return new WrapperAdapter(_storages.Select(storage => storage.GetWrapper()).ToList());
     }
 }

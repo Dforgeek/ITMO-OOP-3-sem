@@ -31,7 +31,9 @@ public class BackupTask : IBackupTask
         DateTime dateTime = DateTime.Now;
         IStorage storage = StorageAlgorithm.Store(_currentBackupObjects, Repository, BackupTaskPath, dateTime);
 
-        RestorePoint.RestorePointBuilder restorePointBuilder = RestorePoint.Builder(storage, dateTime);
+        RestorePoint.RestorePointBuilder restorePointBuilder = RestorePoint.Builder();
+        restorePointBuilder.SetStorage(storage);
+        restorePointBuilder.SetDateTime(dateTime);
         foreach (BackupObject currentBackupObject in _currentBackupObjects)
         {
             restorePointBuilder.AddBackupObject(currentBackupObject);
@@ -45,13 +47,6 @@ public class BackupTask : IBackupTask
     public RestorePoint GetRestorePoint(Guid id)
     {
         return _backup.GetRestorePoint(id);
-    }
-
-    public void DeleteRestorePoint(Guid id)
-    {
-        RestorePoint restorePoint = GetRestorePoint(id);
-        Repository.Delete(restorePoint.Storage.PathToStorage);
-        _backup.DeleteRestorePoint(id);
     }
 
     public BackupObject? FindBackupObject(string backupObjectPath)
