@@ -21,7 +21,7 @@ public class RestorePoint
     public DateTime DateTime { get; }
 
     public Guid Id { get; }
-    public static RestorePointBuilder Builder(IStorage storage, DateTime dateTime) => new RestorePointBuilder(storage, dateTime);
+    public static RestorePointBuilder Builder(IStorage storage, DateTime dateTime) => new RestorePointBuilder(storage);
 
     public class RestorePointBuilder
     {
