@@ -4,13 +4,13 @@ using Backups.Interfaces;
 
 namespace Backups.Extra.Entities;
 
-public class RestoreService : IRestoreService
+public class ToOriginalRestoreService : IRestoreService
 {
     private readonly RestoreVisitor _restoreVisitor;
 
-    public RestoreService()
+    public ToOriginalRestoreService(IRepository repository)
     {
-        _restoreVisitor = new RestoreVisitor();
+        _restoreVisitor = new RestoreVisitor(repository);
     }
 
     public void Restore(RestorePoint restorePoint)

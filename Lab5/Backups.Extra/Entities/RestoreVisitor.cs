@@ -4,13 +4,26 @@ namespace Backups.Extra.Entities;
 
 public class RestoreVisitor : IRepositoryObjectVisitor
 {
+    public RestoreVisitor(IRepository restoreRepository)
+    {
+        RestoreRepository = restoreRepository;
+    }
+
+    public IRepository RestoreRepository { get; }
+
     public void Visit(IFile file)
     {
-        file.
+        using Stream restoreStream = RestoreRepository.OpenWrite(file.RepObjPath);
+        using Stream dataToRestore = file.GetStream();
+
+        dataToRestore.CopyTo(restoreStream);
     }
 
     public void Visit(IFolder folder)
     {
-        throw new NotImplementedException();
+        foreach (IRepositoryObject repositoryObject in folder.GetRepositoryObjects())
+        {
+            repositoryObject.Accept(this);
+        }
     }
 }
