@@ -5,5 +5,5 @@ namespace Backups.Interfaces;
 
 public interface IArchiver
 {
-    IStorage Encode(List<IRepositoryObject> repositoryObjects, IRepository repository, string path);
+    IStorage Encode(IEnumerable<IRepositoryObject> repositoryObjects, IRepository repository, string path);
 }

@@ -13,21 +13,24 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
         _archiver = archiver;
     }
 
-    public IStorage Store(List<BackupObject> backupObjects, IRepository repository, string path, DateTime dateTime)
+    public IStorage Store(IReadOnlyCollection<BackupObject> backupObjects, IRepository repository, string path, DateTime dateTime)
     {
         var repositoryObjects = backupObjects
             .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
-        var storages = new List<IStorage>();
-        foreach (IRepositoryObject repositoryObject in repositoryObjects)
-        {
-            string concreteZipFilePath = Path
-                .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.Name}.zip"));
 
-            var temp = new List<IRepositoryObject> { repositoryObject };
-            storages.Add(_archiver
-                .Encode(new List<IRepositoryObject>(temp), repository, concreteZipFilePath));
-        }
+        var storages = repositoryObjects
+            .Select(repositoryObject => AddStorage(repositoryObject, repository, path, dateTime)).ToList();
 
         return new SplitStorage(repository, path, storages);
+    }
+
+    private IStorage AddStorage(IRepositoryObject repositoryObject, IRepository repository, string path, DateTime dateTime)
+    {
+        string concreteZipFilePath = Path
+            .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.Name}.zip"));
+
+        var temp = new List<IRepositoryObject> { repositoryObject };
+        return _archiver
+            .Encode(new List<IRepositoryObject>(temp), repository, concreteZipFilePath);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Backups.Exceptions;
+﻿using System.Data;
+using Backups.Exceptions;
 using Backups.Interfaces;
 using Backups.Models;
 
@@ -21,19 +22,28 @@ public class RestorePoint
     public DateTime DateTime { get; }
 
     public Guid Id { get; }
-    public static RestorePointBuilder Builder(IStorage storage, DateTime dateTime) => new RestorePointBuilder(storage, dateTime);
+    public static RestorePointBuilder Builder() => new RestorePointBuilder();
 
     public class RestorePointBuilder
     {
         private List<BackupObject> _backupObjects;
-        private IStorage _storage;
+        private IStorage? _storage;
         private DateTime _dateTime;
 
-        public RestorePointBuilder(IStorage storage, DateTime dateTime)
+        public RestorePointBuilder()
         {
             _backupObjects = new List<BackupObject>();
-            _storage = storage;
+            _storage = null;
+        }
+
+        public void SetDateTime(DateTime dateTime)
+        {
             _dateTime = dateTime;
+        }
+
+        public void SetStorage(IStorage storage)
+        {
+            _storage = storage;
         }
 
         public void AddBackupObject(BackupObject backupObject)
@@ -50,6 +60,8 @@ public class RestorePoint
 
         public RestorePoint Build()
         {
+            if (_storage == null)
+                throw RestorePointBuilderException.StorageIsNull();
             var newRestorePoint = new RestorePoint(_dateTime, Guid.NewGuid(), _backupObjects, _storage);
             Reset();
             return newRestorePoint;

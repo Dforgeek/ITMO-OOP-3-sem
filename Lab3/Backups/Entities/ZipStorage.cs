@@ -5,22 +5,23 @@ namespace Backups.Entities;
 
 public class ZipStorage : IStorage
 {
-    private readonly List<IZipObject> _zipObjects;
-    public ZipStorage(IRepository repository, string pathToStorage, List<IZipObject> zipObjects)
+    public ZipStorage(IRepository repository, string pathToStorage, IReadOnlyCollection<IZipObject> zipObjects)
     {
         Repository = repository;
         PathToStorage = pathToStorage;
-        _zipObjects = zipObjects;
+        ZipObjects = zipObjects;
     }
 
     public IRepository Repository { get; }
-    public IReadOnlyCollection<IZipObject> ZipObjects => _zipObjects.AsReadOnly();
+    public IReadOnlyCollection<IZipObject> ZipObjects { get; }
+
     public string PathToStorage { get; }
 
-    public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
+    public IWrapper GetWrapper()
     {
-        Stream archiveStream = Repository.OpenRead(PathToStorage);
+        Stream archiveStream = ((IFile)Repository.GetRepositoryObject(PathToStorage)).GetStream();
         var zipArchive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
-        return _zipObjects.Select(zipObject => zipObject.GetIRepositoryObject(zipArchive)).ToList();
+
+        return new Wrapper(zipArchive, ZipObjects);
     }
 }

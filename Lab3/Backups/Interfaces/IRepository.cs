@@ -8,7 +8,4 @@ public interface IRepository
     IRepositoryObject GetRepositoryObject(string path);
 
     Stream OpenWrite(string path);
-    Stream OpenRead(string path);
-
-    void Delete(string path);
 }
