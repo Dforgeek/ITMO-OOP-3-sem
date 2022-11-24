@@ -17,6 +17,5 @@ public class MergeHandler : IMergeHandler
     {
         List<RestorePoint> restorePointsToExclude = restorePointControl.GetRestorePointsToExclude(backup.RestorePoints);
         var result = new List<RestorePoint>();
-        
     }
 }

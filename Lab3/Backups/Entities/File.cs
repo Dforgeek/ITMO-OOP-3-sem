@@ -9,10 +9,10 @@ public class File : IFile
     public File(string name, Func<Stream> streamFunctor)
     {
         _streamFunctor = streamFunctor;
-        Name = name;
+        RepObjPath = name;
     }
 
-    public string Name { get; }
+    public string RepObjPath { get; }
 
     public void Accept(IRepositoryObjectVisitor repositoryObjectVisitor)
     {

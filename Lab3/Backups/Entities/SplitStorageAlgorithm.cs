@@ -27,7 +27,7 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
     private IStorage AddStorage(IRepositoryObject repositoryObject, IRepository repository, string path, DateTime dateTime)
     {
         string concreteZipFilePath = Path
-            .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.Name}.zip"));
+            .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.RepObjPath}.zip"));
 
         var temp = new List<IRepositoryObject> { repositoryObject };
         return _archiver

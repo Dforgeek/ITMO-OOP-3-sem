@@ -15,10 +15,10 @@ public class FileSystemRepository : IRepository
     public IRepositoryObject GetRepositoryObject(string path)
     {
         if (System.IO.File.Exists(path))
-            return new File(Path.GetFileName(path), () => OpenRead(path));
+            return new File(path, () => OpenRead(path));
         if (Directory.Exists(path))
         {
-            return new Folder(Path.GetFileName(path), () =>
+            return new Folder(path, () =>
             {
                 return Directory
                     .EnumerateFileSystemEntries(path, searchPattern: "*", SearchOption.TopDirectoryOnly)

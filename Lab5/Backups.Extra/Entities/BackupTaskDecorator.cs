@@ -35,13 +35,9 @@ public class BackupTaskDecorator : IBackupTask
         set
         {
             if (!value)
-            {
                 _mergeInsteadOfDelete = value;
-            }
             else if (_backupTask.StorageAlgorithm is SplitStorageAlgorithm)
-            {
                 _mergeInsteadOfDelete = value;
-            }
 
             throw new Exception();
         }
@@ -61,15 +57,15 @@ public class BackupTaskDecorator : IBackupTask
             RestorePointControl.GetRestorePointsToExclude(_backupTask.RestorePoints);
         foreach (RestorePoint point in restorePointsToExclude)
         {
-            _backupTask.DeleteRestorePoint(point.Id);
-            Logger.Log($"Deleted excluded RestorePoint {point.Id}");
+            DeleteRestorePoint(point.Id);
         }
 
         return restorePoint;
     }
 
-    public void Restore(Guid id)
+    public void Restore(Guid id, IRestoreService restoreService)
     {
+        restoreService.Restore(GetRestorePoint(id));
     }
 
     public RestorePoint GetRestorePoint(Guid id)
@@ -79,7 +75,7 @@ public class BackupTaskDecorator : IBackupTask
 
     public void DeleteRestorePoint(Guid id)
     {
-        _backupTask.DeleteRestorePoint(id);
+        _backup.DeleteRestorePoint(id); // TODO: delete from fs also
         Logger.Log($"Deleted RestorePoint {id}");
     }
 
@@ -96,13 +92,13 @@ public class BackupTaskDecorator : IBackupTask
     public BackupObject AddBackupObject(IRepository repository, string path)
     {
         BackupObject backupObject = _backupTask.AddBackupObject(repository, path);
-        Logger.Log($"Added BackupObject to BackupTask {_backupTask.GetHashCode()}. Path: {path}");
+        Logger.Log($"Added BackupObject to BackupTask {_backupTask.GetHashCode()}. RepObjPath: {path}");
         return backupObject;
     }
 
     public void DeleteBackupObject(string backupObjectPath)
     {
         _backupTask.DeleteBackupObject(backupObjectPath);
-        Logger.Log($"Deleted BackupObject from BackupTask {_backupTask.GetHashCode()}. Path: {backupObjectPath}");
+        Logger.Log($"Deleted BackupObject from BackupTask {_backupTask.GetHashCode()}. RepObjPath: {backupObjectPath}");
     }
 }

@@ -1,9 +1,10 @@
 using Backups.Entities;
+using Backups.Extra.Interfaces;
 using Backups.Interfaces;
 
 namespace Backups.Extra.Entities;
 
-public class RestoreService
+public class RestoreService : IRestoreService
 {
     private readonly RestoreVisitor _restoreVisitor;
 
@@ -14,7 +15,8 @@ public class RestoreService
 
     public void Restore(RestorePoint restorePoint)
     {
-        IReadOnlyCollection<IRepositoryObject> repositoryObjects = restorePoint.Storage.GetRepositoryObjects();
+        IReadOnlyCollection<IRepositoryObject> repositoryObjects =
+            restorePoint.Storage.GetWrapper().GetRepositoryObjects();
         foreach (IRepositoryObject repositoryObject in repositoryObjects)
         {
             repositoryObject.Accept(_restoreVisitor);

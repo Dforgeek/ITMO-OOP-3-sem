@@ -2,6 +2,6 @@
 
 public interface IRepositoryObject
 {
-    string Name { get; }
+    string RepObjPath { get; }
     void Accept(IRepositoryObjectVisitor repositoryObjectVisitor);
 }

@@ -7,11 +7,11 @@ public class Folder : IFolder
     private readonly Func<IReadOnlyCollection<IRepositoryObject>> _functor;
     public Folder(string name, Func<IReadOnlyCollection<IRepositoryObject>> functor)
     {
-        Name = name;
+        RepObjPath = name;
         _functor = functor;
     }
 
-    public string Name { get; }
+    public string RepObjPath { get; }
 
     public IReadOnlyCollection<IRepositoryObject> GetRepositoryObjects()
     {

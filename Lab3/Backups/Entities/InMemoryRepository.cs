@@ -21,10 +21,10 @@ public class InMemoryRepository : IRepository
     public IRepositoryObject GetRepositoryObject(string path)
     {
         if (_fileSystem.FileExists(path))
-            return new File(Path.GetFileName(path), () => OpenRead(path));
+            return new File(path, () => OpenRead(path));
         if (_fileSystem.DirectoryExists(path))
         {
-            return new Folder(GetFileName(path), () =>
+            return new Folder(path, () =>
             {
                 return Directory
                     .EnumerateFileSystemEntries(path, searchPattern: "*", SearchOption.TopDirectoryOnly)
