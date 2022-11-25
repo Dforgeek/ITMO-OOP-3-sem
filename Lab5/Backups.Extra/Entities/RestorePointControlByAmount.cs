@@ -14,12 +14,10 @@ public class RestorePointControlByAmount : IRestorePointControl
 
     public int MaxAmount { get; }
 
-    public List<RestorePoint> GetRestorePointsToExclude(IReadOnlyCollection<RestorePoint> restorePoints)
+    public IEnumerable<RestorePoint> GetRestorePointsToExclude(IReadOnlyCollection<RestorePoint> restorePoints)
     {
         var restorePointsToExclude = new List<RestorePoint>(restorePoints);
-        restorePointsToExclude.RemoveRange(restorePoints.Count - MaxAmount, restorePoints.Count - 1);
-        if (restorePointsToExclude.Count == restorePoints.Count)
-            throw new Exception();
-        return restorePointsToExclude;
+
+        return restorePointsToExclude.OrderBy(restorePoint => restorePoint.DateTime).ToList().SkipLast(MaxAmount);
     }
 }

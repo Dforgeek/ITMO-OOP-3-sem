@@ -18,6 +18,11 @@ public class InMemoryRepository : IRepository
 
     public string PathToRepository { get; }
 
+    public void CreateDirectory(string path)
+    {
+        _fileSystem.CreateDirectory(path);
+    }
+
     public IRepositoryObject GetRepositoryObject(string path)
     {
         if (_fileSystem.FileExists(path))

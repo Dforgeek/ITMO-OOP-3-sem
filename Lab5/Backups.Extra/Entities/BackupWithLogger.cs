@@ -22,7 +22,7 @@ public class BackupWithLogger : IBackup
         if (_restorePoints.Contains(restorePoint))
             throw BackupException.RestorePointAlreadyInBackup();
         _restorePoints.Add(restorePoint);
-        _restorePoints = _restorePointControl.GetRestorePointsToExclude(_restorePoints);
+        _restorePoints = _restorePointControl.GetRestorePointsToExclude(_restorePoints).ToList();
     }
 
     public RestorePoint GetRestorePoint(Guid id)

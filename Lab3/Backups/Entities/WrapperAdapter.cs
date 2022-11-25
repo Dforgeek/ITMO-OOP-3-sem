@@ -41,7 +41,7 @@ public class WrapperAdapter : IWrapper
 
     public void Dispose()
     {
-        foreach (Wrapper wrapper in _wrappers)
+        foreach (IWrapper wrapper in _wrappers)
         {
             wrapper.Dispose();
         }

@@ -6,20 +6,16 @@ namespace Backups.Extra.Entities;
 
 public class ToOriginalRestoreService : IRestoreService
 {
-    private readonly RestoreVisitor _restoreVisitor;
-
-    public ToOriginalRestoreService(IRepository repository)
-    {
-        _restoreVisitor = new RestoreVisitor(repository);
-    }
-
     public void Restore(RestorePoint restorePoint)
     {
         IReadOnlyCollection<IRepositoryObject> repositoryObjects =
             restorePoint.Storage.GetWrapper().GetRepositoryObjects();
+
+        var restoreVisitor = new RestoreVisitor(restorePoint.Storage.Repository, restorePoint.Storage.Repository);
+
         foreach (IRepositoryObject repositoryObject in repositoryObjects)
         {
-            repositoryObject.Accept(_restoreVisitor);
+            repositoryObject.Accept(restoreVisitor);
         }
     }
 }

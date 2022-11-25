@@ -17,7 +17,7 @@ public class RestorePointControlHybrid : IRestorePointControl
         _controlOption = controlOption;
     }
 
-    public List<RestorePoint> GetRestorePointsToExclude(IReadOnlyCollection<RestorePoint> restorePoints)
+    public IEnumerable<RestorePoint> GetRestorePointsToExclude(IReadOnlyCollection<RestorePoint> restorePoints)
     {
         switch (_controlOption)
         {
@@ -26,7 +26,7 @@ public class RestorePointControlHybrid : IRestorePointControl
                 var listsOfRestorePoints = _restorePointControls
                     .Select(restorePointControl => restorePointControl
                         .GetRestorePointsToExclude(restorePoints)).ToList();
-                List<RestorePoint> result = IntersectAll(listsOfRestorePoints);
+                List<RestorePoint> result = IntersectAll<RestorePoint>(listsOfRestorePoints);
                 if (result.Count == restorePoints.Count)
                     throw new Exception();
                 return result;
@@ -50,7 +50,7 @@ public class RestorePointControlHybrid : IRestorePointControl
         }
     }
 
-    private List<T> IntersectAll<T>(List<List<T>> lists)
+    private List<T> IntersectAll<T>(List<IEnumerable<T>> lists)
     {
         HashSet<T>? hashSet = null;
         foreach (IEnumerable<T> list in lists)

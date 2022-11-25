@@ -6,16 +6,16 @@ namespace Backups.Extra.Entities;
 
 public class ConfigurationExtra : IConfiguration
 {
-    public ConfigurationExtra(IRepository repository, IStorageAlgorithm storageAlgorithm, ILogger logger, IRestorePointControl restorePointControl, IMergeHandler mergeHandler)
+    public ConfigurationExtra(IRepository repository, IStorageAlgorithm storageAlgorithm, ILogger logger, IRestorePointControl restorePointControl, IRestorePointHandler restorePointHandler)
     {
         Repository = repository;
         StorageAlgorithm = storageAlgorithm;
         RestorePointControl = restorePointControl;
         Logger = logger;
-        MergeHandler = mergeHandler;
+        RestorePointHandler = restorePointHandler;
     }
 
-    public IMergeHandler MergeHandler { get; }
+    public IRestorePointHandler RestorePointHandler { get; }
     public IRestorePointControl RestorePointControl { get; }
     public IRepository Repository { get; }
     public IStorageAlgorithm StorageAlgorithm { get; }

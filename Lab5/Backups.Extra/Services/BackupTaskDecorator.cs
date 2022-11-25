@@ -8,16 +8,14 @@ namespace Backups.Extra.Entities;
 public class BackupTaskDecorator : IBackupTask
 {
     private readonly BackupTask _backupTask;
-    private bool _mergeInsteadOfDelete;
     private IBackup _backup;
 
     public BackupTaskDecorator(IBackup backup, ConfigurationExtra configuration, Guid id)
     {
         Logger = configuration.Logger;
         RestorePointControl = configuration.RestorePointControl;
-        MergeHandler = configuration.MergeHandler;
+        RestorePointHandler = configuration.RestorePointHandler;
         _backupTask = new BackupTask(backup, new Configuration(configuration.Repository, configuration.StorageAlgorithm), id);
-        _mergeInsteadOfDelete = false;
         _backup = backup;
     }
 
@@ -26,41 +24,23 @@ public class BackupTaskDecorator : IBackupTask
     public IStorageAlgorithm StorageAlgorithm => _backupTask.StorageAlgorithm;
     public IRestorePointControl RestorePointControl { get; }
     public string BackupTaskPath => _backupTask.BackupTaskPath;
-    public IMergeHandler MergeHandler { get; set; }
+    public IRestorePointHandler RestorePointHandler { get; set; }
     public ILogger Logger { get; }
-
-    public bool MergeInsteadOfDelete
-    {
-        get => _mergeInsteadOfDelete;
-        set
-        {
-            if (!value)
-                _mergeInsteadOfDelete = value;
-            else if (_backupTask.StorageAlgorithm is SplitStorageAlgorithm)
-                _mergeInsteadOfDelete = value;
-
-            throw new Exception();
-        }
-    }
 
     public RestorePoint AddRestorePoint()
     {
         RestorePoint restorePoint = _backupTask.AddRestorePoint(); // TODO: merge instead of delete
         Logger.Log($"Added RestorePoint {restorePoint.Id}");
-        if (MergeInsteadOfDelete)
-        {
-            MergeHandler.Merge(_backup, Repository, RestorePointControl);
-            return restorePoint;
-        }
 
-        List<RestorePoint> restorePointsToExclude =
-            RestorePointControl.GetRestorePointsToExclude(_backupTask.RestorePoints);
-        foreach (RestorePoint point in restorePointsToExclude)
-        {
-            DeleteRestorePoint(point.Id);
-        }
-
+        RestorePointHandler.Handle(_backup, Repository, RestorePointControl);
         return restorePoint;
+
+        // var restorePointsToExclude =
+        //     RestorePointControl.GetRestorePointsToExclude(_backupTask.RestorePoints).ToList();
+        // foreach (RestorePoint point in restorePointsToExclude)
+        // {
+        //     DeleteRestorePoint(point.Id);
+        // }
     }
 
     public void Restore(Guid id, IRestoreService restoreService)

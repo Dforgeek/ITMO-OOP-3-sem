@@ -18,7 +18,7 @@ public class ZipFolder : IZipObject
 
     public IRepositoryObject GetIRepositoryObject(ZipArchive zipArchive)
     {
-        var zipArchiveTemp = new ZipArchive(zipArchive.GetEntry(ZipObjPath) !.Open(), ZipArchiveMode.Read);
+        var zipArchiveTemp = new ZipArchive(zipArchive.GetEntry(Path.GetFileName(ZipObjPath)) !.Open(), ZipArchiveMode.Read);
         return new Folder(ZipObjPath, () => _zipObjects
             .Select(x => x.GetIRepositoryObject(zipArchiveTemp)).ToList().AsReadOnly());
     }
