@@ -46,7 +46,6 @@ public class BackupsExtraTest
         IFileSystem fs = new MemoryFileSystem();
         const string pathToWorkRep = @"\Work";
         const string pathToArchive = @"\Archive";
-        const string pathToRestore = @"\Restore";
         fs.CreateDirectory(@"\Work");
         fs.CreateDirectory(@"\Archive");
         fs.CreateDirectory(@"\Restore");
@@ -64,7 +63,7 @@ public class BackupsExtraTest
         backupTask.AddBackupObject(workRepository, @"\Work\temp1.txt");
         backupTask.AddBackupObject(workRepository, @"\Work\temp2.txt");
 
-        RestorePoint rp1 = backupTask.AddRestorePoint();
+        backupTask.AddRestorePoint();
 
         backupTask.DeleteBackupObject(@"\Work\temp2.txt");
         Assert.Equal("1", backupTask.RestorePoints.Count.ToString());
