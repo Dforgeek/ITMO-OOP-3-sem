@@ -12,17 +12,22 @@ public class FileSystemRepository : IRepository
 
     public string PathToRepository { get; }
 
+    public void CreateDirectory(string path)
+    {
+        Directory.CreateDirectory(path);
+    }
+
     public IRepositoryObject GetRepositoryObject(string path)
     {
         if (System.IO.File.Exists(path))
-            return new File(Path.GetFileName(path), () => OpenRead(path));
+            return new File(path, () => OpenRead(path));
         if (Directory.Exists(path))
         {
-            return new Folder(Path.GetFileName(path), () =>
+            return new Folder(path, () =>
             {
                 return Directory
                     .EnumerateFileSystemEntries(path, searchPattern: "*", SearchOption.TopDirectoryOnly)
-                    .Select(repoObj => GetRepositoryObject(path)).ToList();
+                    .Select(filePath => GetRepositoryObject(filePath)).ToList();
             });
         }
 

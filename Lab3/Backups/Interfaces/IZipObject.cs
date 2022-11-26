@@ -4,6 +4,6 @@ namespace Backups.Interfaces;
 
 public interface IZipObject
 {
-    string Name { get; }
+    string ZipObjPath { get; }
     IRepositoryObject GetIRepositoryObject(ZipArchive zipArchive);
 }

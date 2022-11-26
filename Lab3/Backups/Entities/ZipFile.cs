@@ -6,19 +6,19 @@ namespace Backups.Entities;
 
 public class ZipFile : IZipObject
 {
-    public ZipFile(string name)
+    public ZipFile(string path)
     {
-        Name = name;
+        ZipObjPath = path;
     }
 
-    public string Name { get; }
+    public string ZipObjPath { get; }
     public IRepositoryObject GetIRepositoryObject(ZipArchive zipArchive)
     {
-        return new File(Name, () =>
+        return new File(ZipObjPath, () =>
         {
-            ZipArchiveEntry? entry = zipArchive.GetEntry(Name);
+            ZipArchiveEntry? entry = zipArchive.GetEntry(Path.GetFileName(ZipObjPath));
             if (entry != null)
-                return zipArchive.GetEntry(Name) !.Open();
+                return zipArchive.GetEntry(Path.GetFileName(ZipObjPath)) !.Open();
             throw new Exception();
         });
     }

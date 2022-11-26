@@ -5,5 +5,5 @@ namespace Backups.Interfaces;
 
 public interface IStorageAlgorithm
 {
-    IStorage Store(IReadOnlyCollection<BackupObject> backupObjects, IRepository repository, string path, DateTime dateTime);
+    IStorage Store(IReadOnlyCollection<IRepositoryObject> repositoryObjects, IRepository repository, string path, DateTime dateTime);
 }

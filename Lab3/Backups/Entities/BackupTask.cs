@@ -29,7 +29,9 @@ public class BackupTask : IBackupTask
     public RestorePoint AddRestorePoint()
     {
         DateTime dateTime = DateTime.Now;
-        IStorage storage = StorageAlgorithm.Store(_currentBackupObjects, Repository, BackupTaskPath, dateTime);
+        var repositoryObjects = _currentBackupObjects
+            .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
+        IStorage storage = StorageAlgorithm.Store(repositoryObjects, Repository, BackupTaskPath, dateTime);
 
         RestorePoint.RestorePointBuilder restorePointBuilder = RestorePoint.Builder();
         restorePointBuilder.SetStorage(storage);

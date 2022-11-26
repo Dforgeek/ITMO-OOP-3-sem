@@ -26,18 +26,18 @@ public class ZipVisitor : IRepositoryObjectVisitor
 
     public void Visit(IFile file)
     {
-        ZipArchiveEntry entry = _zipArchives.Peek().CreateEntry(Path.GetFileName(file.Name));
+        ZipArchiveEntry entry = _zipArchives.Peek().CreateEntry(Path.GetFileName(file.RepObjPath));
         using (Stream fileStream = file.GetStream())
         using (Stream archiveStream = entry.Open())
             fileStream.CopyTo(archiveStream);
 
-        var zipFile = new ZipFile(file.Name);
+        var zipFile = new ZipFile(file.RepObjPath);
         _zipObjectLists.Peek().Add(zipFile);
     }
 
     public void Visit(IFolder folder)
     {
-        ZipArchiveEntry entry = _zipArchives.Peek().CreateEntry(Path.GetFileName(folder.Name));
+        ZipArchiveEntry entry = _zipArchives.Peek().CreateEntry(Path.GetFileName(folder.RepObjPath));
         using var zipArchive = new ZipArchive(entry.Open(), ZipArchiveMode.Create);
         _zipArchives.Push(zipArchive);
         _zipObjectLists.Push(new List<IZipObject>());
@@ -49,7 +49,7 @@ public class ZipVisitor : IRepositoryObjectVisitor
             repositoryObject.Accept(this);
         }
 
-        var zipFolder = new ZipFolder(Path.GetFileName(folder.Name), _zipObjectLists.Pop());
+        var zipFolder = new ZipFolder(folder.RepObjPath, _zipObjectLists.Pop());
         _zipObjectLists.Peek().Add(zipFolder);
         _zipArchives.Pop();
     }

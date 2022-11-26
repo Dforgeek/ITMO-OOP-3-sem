@@ -13,21 +13,19 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
         _archiver = archiver;
     }
 
-    public IStorage Store(IReadOnlyCollection<BackupObject> backupObjects, IRepository repository, string path, DateTime dateTime)
+    public IStorage Store(IReadOnlyCollection<IRepositoryObject> repositoryObjects, IRepository repository, string path, DateTime dateTime)
     {
-        var repositoryObjects = backupObjects
-            .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
+        string restorePointPath = Path.Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), ".zip"));
 
         var storages = repositoryObjects
-            .Select(repositoryObject => AddStorage(repositoryObject, repository, path, dateTime)).ToList();
-
-        return new SplitStorage(repository, path, storages);
+            .Select(repositoryObject => AddStorage(repositoryObject, repository, restorePointPath, dateTime)).ToList();
+        return new SplitStorage(repository, restorePointPath, storages);
     }
 
     private IStorage AddStorage(IRepositoryObject repositoryObject, IRepository repository, string path, DateTime dateTime)
     {
         string concreteZipFilePath = Path
-            .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.Name}.zip"));
+            .Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), $".{repositoryObject.RepObjPath}.zip"));
 
         var temp = new List<IRepositoryObject> { repositoryObject };
         return _archiver

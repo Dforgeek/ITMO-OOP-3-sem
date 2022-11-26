@@ -8,7 +8,7 @@ public class ZipArchiver : IArchiver
 {
     public IStorage Encode(IEnumerable<IRepositoryObject> repositoryObjects, IRepository repository, string path)
     {
-        Stream writeStream = repository.OpenWrite(string.Concat(path, ".zip"));
+        Stream writeStream = repository.OpenWrite(path);
         var zipArchive = new ZipArchive(writeStream, ZipArchiveMode.Create);
         var zipVisitor = new ZipVisitor(zipArchive);
         foreach (IRepositoryObject repositoryObject in repositoryObjects)
