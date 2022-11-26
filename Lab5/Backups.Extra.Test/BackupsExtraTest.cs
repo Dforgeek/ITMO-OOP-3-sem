@@ -34,7 +34,6 @@ public class BackupsExtraTest
         backupTask.AddBackupObject(workRepository, @"\Work\temp.txt");
         RestorePoint rp = backupTask.AddRestorePoint();
         backupTask.Restore(rp.Id, new ToDifferLocationRestoreService(restoreRepository));
-        Assert.True(fs.FileExists(@$"\Archive\{rp.DateTime.ToString("dd-MM-yyyy.hh-mm")}.zip"));
         Assert.True(fs.FileExists(@"\Restore\temp.txt"));
     }
 
