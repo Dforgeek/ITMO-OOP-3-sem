@@ -12,11 +12,9 @@ public class SingleStorageAlgorithm : IStorageAlgorithm
         _archiver = archiver;
     }
 
-    public IStorage Store(IReadOnlyCollection<BackupObject> backupObjects, IRepository repository, string path, DateTime dateTime)
+    public IStorage Store(IReadOnlyCollection<IRepositoryObject> repositoryObjects, IRepository repository, string path, DateTime dateTime)
     {
         string restorePointPath = Path.Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), ".zip"));
-        var repositoryObjects = backupObjects
-            .Select(backupObject => backupObject.GetRepositoryObject()).ToList();
         return _archiver.Encode(repositoryObjects, repository, restorePointPath);
     }
 }

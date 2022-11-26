@@ -33,6 +33,7 @@ public class BackupTaskDecorator : IBackupTask
         Logger.Log($"Added RestorePoint {restorePoint.Id}");
 
         RestorePointHandler.Handle(_backup, Repository, RestorePointControl);
+        Logger.Log("Handled successfully");
         return restorePoint;
 
         // var restorePointsToExclude =
@@ -46,6 +47,7 @@ public class BackupTaskDecorator : IBackupTask
     public void Restore(Guid id, IRestoreService restoreService)
     {
         restoreService.Restore(GetRestorePoint(id));
+        Logger.Log($"Restored data from RestorePoint {id}");
     }
 
     public RestorePoint GetRestorePoint(Guid id)
