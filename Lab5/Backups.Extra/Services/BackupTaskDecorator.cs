@@ -1,9 +1,10 @@
 ﻿using Backups.Entities;
+using Backups.Extra.Entities;
 using Backups.Extra.Interfaces;
 using Backups.Interfaces;
 using Backups.Models;
 
-namespace Backups.Extra.Entities;
+namespace Backups.Extra.Services;
 
 public class BackupTaskDecorator : IBackupTask
 {
@@ -26,6 +27,7 @@ public class BackupTaskDecorator : IBackupTask
     public string BackupTaskPath => _backupTask.BackupTaskPath;
     public IRestorePointHandler RestorePointHandler { get; set; }
     public ILogger Logger { get; }
+    public IReadOnlyCollection<RestorePoint> RestorePoints => _backupTask.RestorePoints;
 
     public RestorePoint AddRestorePoint()
     {
@@ -35,13 +37,6 @@ public class BackupTaskDecorator : IBackupTask
         RestorePointHandler.Handle(_backup, Repository, RestorePointControl);
         Logger.Log("Handled successfully");
         return restorePoint;
-
-        // var restorePointsToExclude =
-        //     RestorePointControl.GetRestorePointsToExclude(_backupTask.RestorePoints).ToList();
-        // foreach (RestorePoint point in restorePointsToExclude)
-        // {
-        //     DeleteRestorePoint(point.Id);
-        // }
     }
 
     public void Restore(Guid id, IRestoreService restoreService)

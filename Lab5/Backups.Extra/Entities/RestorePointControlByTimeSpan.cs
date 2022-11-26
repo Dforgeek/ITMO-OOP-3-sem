@@ -17,8 +17,7 @@ public class RestorePointControlByTimeSpan : IRestorePointControl
         DateTime maxDateTime = restorePoints.Max(rp => rp.DateTime);
         var restorePointsToExclude = restorePoints
             .Where(rp => maxDateTime - rp.DateTime > Interval).ToList();
-        if (restorePointsToExclude.Count == restorePoints.Count)
-            throw new Exception();
+
         return restorePointsToExclude;
     }
 }

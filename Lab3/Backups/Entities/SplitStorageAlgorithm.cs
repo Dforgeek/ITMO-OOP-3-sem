@@ -15,10 +15,11 @@ public class SplitStorageAlgorithm : IStorageAlgorithm
 
     public IStorage Store(IReadOnlyCollection<IRepositoryObject> repositoryObjects, IRepository repository, string path, DateTime dateTime)
     {
-        var storages = repositoryObjects
-            .Select(repositoryObject => AddStorage(repositoryObject, repository, path, dateTime)).ToList();
+        string restorePointPath = Path.Combine(path, string.Concat(dateTime.ToString("dd-MM-yyyy.hh-mm"), ".zip"));
 
-        return new SplitStorage(repository, path, storages);
+        var storages = repositoryObjects
+            .Select(repositoryObject => AddStorage(repositoryObject, repository, restorePointPath, dateTime)).ToList();
+        return new SplitStorage(repository, restorePointPath, storages);
     }
 
     private IStorage AddStorage(IRepositoryObject repositoryObject, IRepository repository, string path, DateTime dateTime)

@@ -24,6 +24,7 @@ public class MergeHandler : IRestorePointHandler
         }
 
         DateTime dateTime = DateTime.Now;
+
         pointsToExclude = pointsToExclude.OrderByDescending(rp => rp.DateTime).ToList();
         RestorePoint mergedRestorePoint = pointsToExclude.Aggregate(
             (restoreP1, restoreP2) =>
@@ -48,8 +49,11 @@ public class MergeHandler : IRestorePointHandler
                 Path.GetFileName(restoreP2.RepObjPath) == Path.GetFileName(restoreP1.Path))).ToList();
         var archiver = new ZipArchiver();
         var algo = new SplitStorageAlgorithm(archiver);
+
         algo.Store(mergedRepObjects, repository, repository.PathToRepository, dateTime);
         Logger.Log($"Archived data from new merged restore point {mergedRestorePoint.Id}");
+
+        backup.AddRestorePoint(mergedRestorePoint);
 
         foreach (RestorePoint restorePoint in pointsToExclude)
         {

@@ -17,7 +17,7 @@ public class RestoreVisitor : IRepositoryObjectVisitor
     {
         string relativePath = Path.GetRelativePath(OldRepository.PathToRepository, file.RepObjPath);
         string newPath = Path.Combine(RestoreRepository.PathToRepository, relativePath);
-        using Stream restoreStream = RestoreRepository.OpenWrite(newPath); // TODO: union repPath + relative file path
+        using Stream restoreStream = RestoreRepository.OpenWrite(newPath);
         using Stream dataToRestore = file.GetStream();
 
         dataToRestore.CopyTo(restoreStream);

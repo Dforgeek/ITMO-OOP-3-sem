@@ -10,8 +10,6 @@ public class ToDifferLocationRestoreService : IRestoreService
 {
     public ToDifferLocationRestoreService(IRepository differRepository)
     {
-        if (!Directory.Exists(differRepository.PathToRepository))
-            throw new Exception();
         DifferRepository = differRepository;
     }
 

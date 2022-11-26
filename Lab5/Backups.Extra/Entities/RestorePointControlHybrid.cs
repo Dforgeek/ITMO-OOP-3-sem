@@ -1,4 +1,5 @@
 ﻿using Backups.Entities;
+using Backups.Extra.Exceptions;
 using Backups.Extra.Interfaces;
 using Backups.Extra.Models;
 
@@ -12,7 +13,7 @@ public class RestorePointControlHybrid : IRestorePointControl
     public RestorePointControlHybrid(List<IRestorePointControl> restorePointControls, HybridControlOption controlOption)
     {
         if (restorePointControls.Count == 0)
-            throw new Exception();
+            throw RestorePointControlException.NoRestorePointControlsWereProvidedForHybrid();
         _restorePointControls = restorePointControls;
         _controlOption = controlOption;
     }
@@ -27,8 +28,6 @@ public class RestorePointControlHybrid : IRestorePointControl
                     .Select(restorePointControl => restorePointControl
                         .GetRestorePointsToExclude(restorePoints)).ToList();
                 List<RestorePoint> result = IntersectAll<RestorePoint>(listsOfRestorePoints);
-                if (result.Count == restorePoints.Count)
-                    throw new Exception();
                 return result;
             }
 
@@ -40,13 +39,11 @@ public class RestorePointControlHybrid : IRestorePointControl
                     result.AddRange(restorePointControl.GetRestorePointsToExclude(restorePoints));
                 }
 
-                if (result.Count == restorePoints.Count)
-                    throw new Exception();
                 return result;
             }
 
             default:
-                throw new Exception();
+                throw RestorePointControlException.IncorrectCriteriaForHybrid();
         }
     }
 

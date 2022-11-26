@@ -12,7 +12,7 @@ public class Backup : IBackup
         _restorePoints = new List<RestorePoint>();
     }
 
-    public IReadOnlyCollection<RestorePoint> RestorePoints => new List<RestorePoint>().AsReadOnly();
+    public IReadOnlyCollection<RestorePoint> RestorePoints => _restorePoints.AsReadOnly();
 
     public RestorePoint GetRestorePoint(Guid id)
     {
