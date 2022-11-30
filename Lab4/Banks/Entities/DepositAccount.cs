@@ -5,28 +5,38 @@ namespace Banks.Entities;
 
 public class DepositAccount : IBankAccount
 {
-    public DepositAccount(IBank bank, Client client, decimal money, Guid id)
+    public DepositAccount(Bank bank, Client client, PosOnlyMoney money, Guid id)
     {
-        if (money < 0)
-            throw new Exception();
         Bank = bank;
         Client = client;
-        Money = money;
+        Balance = money;
         Id = id;
     }
 
     public Guid Id { get; }
-    public IBank Bank { get; }
-    public Client Client { get; }
-    public decimal Money { get; private set; }
 
-    public void AddMoney(decimal money)
+    public Bank Bank { get; }
+
+    public Client Client { get; }
+
+    public IMoney Balance { get; }
+
+    public void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount)
     {
-        if (money < 0)
-        Money += money;
+        throw new NotImplementedException();
     }
 
-    public void RemoveMoney(decimal money)
+    public void AddMoney(PosOnlyMoney money)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RemoveMoney(PosOnlyMoney money)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddPercentsPerAnnum()
     {
         throw new NotImplementedException();
     }

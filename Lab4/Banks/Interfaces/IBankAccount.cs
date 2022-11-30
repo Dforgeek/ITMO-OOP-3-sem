@@ -1,4 +1,5 @@
-﻿using Banks.Models;
+﻿using Banks.Entities;
+using Banks.Models;
 
 namespace Banks.Interfaces;
 
@@ -6,12 +7,17 @@ public interface IBankAccount
 {
     Guid Id { get; }
 
-    IBank Bank { get; }
+    Bank Bank { get; }
+
     Client Client { get; }
 
-    decimal Money { get; }
+    IMoney Balance { get; }
 
-    void AddMoney(decimal money);
+    void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount);
 
-    void RemoveMoney(decimal money);
+    void AddMoney(PosOnlyMoney money);
+
+    void RemoveMoney(PosOnlyMoney money);
+
+    void AddPercentsPerAnnum();
 }

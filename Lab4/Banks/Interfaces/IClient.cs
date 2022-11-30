@@ -1,5 +1,5 @@
 ﻿namespace Banks.Interfaces;
 
-public interface ICentralBank
+public class IClient
 {
 }

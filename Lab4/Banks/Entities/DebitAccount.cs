@@ -6,34 +6,44 @@ namespace Banks.Entities;
 
 public class DebitAccount : IBankAccount
 {
-    public DebitAccount(IBank bank, Client client, decimal money, Guid id)
+    private decimal _sumOfPercentsPerAnnum;
+
+    public DebitAccount(Bank bank, Client client, PosOnlyMoney money, DebitAccountTerms debitAccountTerms, Guid id)
     {
-        if (money < 0)
-            throw new Exception();
-        Money = money;
+        Balance = money;
         Bank = bank;
         Client = client;
         Id = id;
+        _sumOfPercentsPerAnnum = 0;
     }
 
     public Guid Id { get; }
-    public IBank Bank { get; }
-    public Client Client { get; }
-    public decimal Money { get; private set; }
 
-    public void AddMoney(decimal money)
+    public Bank Bank { get; }
+
+    public Client Client { get; }
+
+    public IMoney Balance { get; private set; }
+
+    public void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount)
     {
-        if (money < 0)
-            throw new Exception();
-        Money += money;
+        RemoveMoney(money);
+        anotherBankAccount.AddMoney(money);
     }
 
-    public void RemoveMoney(decimal money)
+    public void AddMoney(PosOnlyMoney money)
     {
-        if (money < 0)
-            throw new Exception();
-        if (Money - money < 0)
-            throw new Exception();
-        Money -= money;
+        Balance = new PosOnlyMoney(Balance.Value + money.Value);
+    }
+
+    public void RemoveMoney(PosOnlyMoney money)
+    {
+        Balance = new PosOnlyMoney(Balance.Value - money.Value);
+    }
+
+    public void AddPercentsPerAnnum()
+    {
+        Balance = new PosOnlyMoney(Balance.Value + _sumOfPercentsPerAnnum);
+        _sumOfPercentsPerAnnum = 0;
     }
 }
