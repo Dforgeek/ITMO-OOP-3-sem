@@ -6,6 +6,7 @@ namespace Banks.Entities;
 
 public class DebitAccount : IBankAccount
 {
+    private const int DaysInYear = 365;
     private decimal _sumOfPercentsPerAnnum;
 
     public DebitAccount(Bank bank, Client client, PosOnlyMoney money, DebitAccountTerms debitAccountTerms, Guid id)
@@ -15,6 +16,7 @@ public class DebitAccount : IBankAccount
         Client = client;
         Id = id;
         _sumOfPercentsPerAnnum = 0;
+        DebitAccountTerms = debitAccountTerms;
     }
 
     public Guid Id { get; }
@@ -25,11 +27,9 @@ public class DebitAccount : IBankAccount
 
     public IMoney Balance { get; private set; }
 
-    public void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount)
-    {
-        RemoveMoney(money);
-        anotherBankAccount.AddMoney(money);
-    }
+    public DebitAccountTerms DebitAccountTerms { get; private set; }
+    
+    public void Transfer(I)
 
     public void AddMoney(PosOnlyMoney money)
     {
@@ -41,9 +41,26 @@ public class DebitAccount : IBankAccount
         Balance = new PosOnlyMoney(Balance.Value - money.Value);
     }
 
-    public void AddPercentsPerAnnum()
+    public void AddSumOfPercentsPerAnnumToBalance()
     {
         Balance = new PosOnlyMoney(Balance.Value + _sumOfPercentsPerAnnum);
         _sumOfPercentsPerAnnum = 0;
+    }
+
+    public void AddPercentsToSum()
+    {
+        _sumOfPercentsPerAnnum +=
+            Balance.Value * (DebitAccountTerms.PercentPerAnnum.GetInCoefficientForm / DaysInYear);
+    }
+
+    public void Update(DebitAccountTerms debitAccountTerms)
+    {
+        Client.GetNotification();
+        DebitAccountTerms = debitAccountTerms;
+    }
+
+    public void AcceptVisitor(IAccountTermsVisitor termsVisitor)
+    {
+        termsVisitor.CreateAccountTerms(this);
     }
 }

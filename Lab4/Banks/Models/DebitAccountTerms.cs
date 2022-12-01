@@ -2,15 +2,15 @@
 
 namespace Banks.Models;
 
-public record DebitAccountTerms
+public class DebitAccountTerms : IBankAccountTerms
 {
-    public DebitAccountTerms(PosOnlyMoney limit, decimal percentPerAnnum)
+    public DebitAccountTerms(PosOnlyMoney limit, Percent percentPerAnnum)
     {
-        Limit = limit;
+        UnreliableClientLimit = limit;
         PercentPerAnnum = percentPerAnnum;
     }
 
-    public decimal PercentPerAnnum { get; }
+    public Percent PercentPerAnnum { get; }
 
-    public PosOnlyMoney Limit { get; }
+    public PosOnlyMoney UnreliableClientLimit { get; }
 }

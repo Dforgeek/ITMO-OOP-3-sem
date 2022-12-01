@@ -23,10 +23,7 @@ public class CreditAccount : IBankAccount
 
     public IMoney Balance { get; private set; }
 
-    public void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount)
-    {
-        throw new NotImplementedException();
-    }
+    public CreditAccountTerms CreditAccountTerms { get; private set; }
 
     public void AddMoney(PosOnlyMoney money)
     {
@@ -38,5 +35,10 @@ public class CreditAccount : IBankAccount
         throw new NotImplementedException();
     }
 
-    public void AddPercentsPerAnnum() { }
+    public void AddSumOfPercentsPerAnnumToBalance() { }
+
+    public void AcceptVisitor(IAccountTermsVisitor termsVisitor)
+    {
+        termsVisitor.CreateAccountTerms(this);
+    }
 }

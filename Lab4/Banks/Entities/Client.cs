@@ -3,7 +3,7 @@ using Banks.Interfaces;
 
 namespace Banks.Models;
 
-public class Client : IClient
+public class Client
 {
     private readonly List<INotificationStrategy> _notificationStrategies;
 
@@ -35,12 +35,9 @@ public class Client : IClient
         _notificationStrategies.Add(newWayToNotify);
     }
 
-    public void Update()
+    public void GetNotification()
     {
-        foreach (INotificationStrategy notificationStrategy in _notificationStrategies)
-        {
-            notificationStrategy.Notify();
-        }
+        
     }
 
     public class ClientBuilder

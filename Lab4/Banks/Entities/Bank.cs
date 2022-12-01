@@ -7,47 +7,42 @@ namespace Banks.Entities;
 public class Bank
 {
     private readonly List<IBankAccount> _bankAccounts;
+    private readonly List<TransactionLog> _transactionLogs;
 
-    public Bank(string name, PosNegMoney transferLimit)
+    public Bank(string name, PosNegMoney unreliableTransferLimit)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new Exception();
 
         Name = name;
         _bankAccounts = new List<IBankAccount>();
-        TransferLimit = transferLimit;
+        _transactionLogs = new List<TransactionLog>();
     }
 
     public string Name { get; }
-    public PosNegMoney TransferLimit { get; }
-    public CreditAccountTerms CreditAccountTerms { get; private set; }
-    public DebitAccountTerms DebitAccountTerms { get; private set; }
-    public DepositAccountTerms DepositAccountTerms { get; private set; }
 
-    public CreditAccount CreateCreditAccount(Client client, IMoney money)
+    public IAccountTermsVisitor AccountTermsVisitor { get; private set; }
+
+    public IBankAccount CreateBankAccount(IBankAccountFactory bankAccountFactory, Client client, IMoney money)
     {
-        var newAccount = new CreditAccount(this, client, money, Guid.NewGuid());
+        IBankAccount newAccount = bankAccountFactory
+            .CreateBankAccount(this, client, new PosOnlyMoney(money.Value));
+        newAccount.AcceptVisitor(AccountTermsVisitor);
         _bankAccounts.Add(newAccount);
         return newAccount;
+    }
+
+    public void UpdateAccountTerms(IAccountTermsVisitor accountTermsVisitor)
+    {
+        AccountTermsVisitor = accountTermsVisitor;
+        foreach (IBankAccount bankAccount in _bankAccounts)
+        {
+            bankAccount.AcceptVisitor(accountTermsVisitor);
+        }
     }
 
     public void Transfer(Guid fromAccountId, Guid toAccountId, PosOnlyMoney money)
     {
         throw new NotImplementedException();
-    }
-
-    public void Update(CreditAccountTerms newCreditAccountTerms)
-    {
-        CreditAccountTerms = newCreditAccountTerms;
-    }
-
-    public void Update(DebitAccountTerms newDebitAccountTerms)
-    {
-        DebitAccountTerms = newDebitAccountTerms;
-    }
-
-    public void Update(DepositAccountTerms newDepositAccountTerms)
-    {
-        DepositAccountTerms = newDepositAccountTerms;
     }
 }

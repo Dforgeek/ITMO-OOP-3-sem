@@ -2,12 +2,13 @@
 
 public record DepositChangeRate
 {
-    public DepositChangeRate(PosOnlyMoney threshold, decimal percent)
+    public DepositChangeRate(PosOnlyMoney threshold, Percent percent)
     {
         Threshold = threshold;
         Percent = percent;
     }
 
     public PosOnlyMoney Threshold { get; }
-    public decimal Percent { get; }
+
+    public Percent Percent { get; }
 }

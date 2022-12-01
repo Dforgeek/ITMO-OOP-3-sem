@@ -13,11 +13,11 @@ public interface IBankAccount
 
     IMoney Balance { get; }
 
-    void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount);
-
     void AddMoney(PosOnlyMoney money);
 
     void RemoveMoney(PosOnlyMoney money);
 
-    void AddPercentsPerAnnum();
+    void AddSumOfPercentsPerAnnumToBalance();
+
+    void AcceptVisitor(IAccountTermsVisitor termsVisitor);
 }

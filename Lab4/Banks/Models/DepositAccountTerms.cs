@@ -2,34 +2,35 @@
 
 namespace Banks.Models;
 
-public record DepositAccountTerms
+public record DepositAccountTerms : IBankAccountTerms
 {
-    private List<DepositChangeRate> _changeRates;
-
-    private DepositAccountTerms(PosOnlyMoney limit, List<DepositChangeRate> changeRates)
+    private readonly List<DepositChangeRate> _depositChangeRates;
+    private DepositAccountTerms(PosOnlyMoney unreliableClientLimit, List<DepositChangeRate> depositChangeRates)
     {
-        Limit = limit;
-        _changeRates = changeRates;
+        UnreliableClientLimit = unreliableClientLimit;
+        _depositChangeRates = depositChangeRates;
     }
 
-    public PosOnlyMoney Limit { get; }
+    public PosOnlyMoney UnreliableClientLimit { get; }
+
+    public IReadOnlyCollection<DepositChangeRate> DepositAccountTermsList => _depositChangeRates.AsReadOnly();
 
     public static DepositAccountTermsBuilder Builder() => new DepositAccountTermsBuilder();
 
     public class DepositAccountTermsBuilder
     {
-        private PosOnlyMoney? _limit;
+        private PosOnlyMoney? _unreliableClientLimit;
         private List<DepositChangeRate> _changeRates;
 
         public DepositAccountTermsBuilder()
         {
             _changeRates = new List<DepositChangeRate>();
-            _limit = null;
+            _unreliableClientLimit = null;
         }
 
         public void SetLimit(PosOnlyMoney limit)
         {
-            _limit = limit;
+            _unreliableClientLimit = limit;
         }
 
         public void AddDepositChangeRate(DepositChangeRate depositChangeRate)
@@ -40,14 +41,14 @@ public record DepositAccountTerms
         public void Reset()
         {
             _changeRates = new List<DepositChangeRate>();
-            _limit = null;
+            _unreliableClientLimit = null;
         }
 
         public DepositAccountTerms Build()
         {
-            if (_limit == null)
+            if (_unreliableClientLimit == null)
                 throw new Exception();
-            var newDepositAccountTerms = new DepositAccountTerms(_limit, _changeRates);
+            var newDepositAccountTerms = new DepositAccountTerms(_unreliableClientLimit, _changeRates);
             Reset();
             return newDepositAccountTerms;
         }

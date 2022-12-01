@@ -21,11 +21,6 @@ public class DepositAccount : IBankAccount
 
     public IMoney Balance { get; }
 
-    public void Transfer(PosOnlyMoney money, IBankAccount anotherBankAccount)
-    {
-        throw new NotImplementedException();
-    }
-
     public void AddMoney(PosOnlyMoney money)
     {
         throw new NotImplementedException();
@@ -36,8 +31,13 @@ public class DepositAccount : IBankAccount
         throw new NotImplementedException();
     }
 
-    public void AddPercentsPerAnnum()
+    public void AddSumOfPercentsPerAnnumToBalance()
     {
         throw new NotImplementedException();
+    }
+
+    public void AcceptVisitor(IAccountTermsVisitor termsVisitor)
+    {
+        termsVisitor.CreateAccountTerms(this);
     }
 }

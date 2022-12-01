@@ -2,8 +2,18 @@
 
 namespace Banks.Models;
 
-public class CreditAccountTerms
+public class CreditAccountTerms : IBankAccountTerms
 {
-    
-    public PosOnlyMoney Limit { get; }
+    public CreditAccountTerms(PosOnlyMoney unreliableClientLimit, PosNegMoney creditLimit, Percent commission)
+    {
+        UnreliableClientLimit = unreliableClientLimit;
+        CreditLimit = creditLimit;
+        Commission = commission;
+    }
+
+    public PosOnlyMoney UnreliableClientLimit { get; }
+
+    public PosNegMoney CreditLimit { get; }
+
+    public Percent Commission { get; }
 }
