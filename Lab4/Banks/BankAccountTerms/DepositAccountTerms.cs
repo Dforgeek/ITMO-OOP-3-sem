@@ -1,10 +1,11 @@
-﻿using Banks.Interfaces;
+﻿using Banks.ValueObjects;
 
-namespace Banks.Models;
+namespace Banks.BankAccountTerms;
 
 public record DepositAccountTerms : IBankAccountTerms
 {
     private readonly List<DepositChangeRate> _depositChangeRates;
+
     private DepositAccountTerms(PosOnlyMoney unreliableClientLimit, List<DepositChangeRate> depositChangeRates)
     {
         UnreliableClientLimit = unreliableClientLimit;
@@ -14,6 +15,18 @@ public record DepositAccountTerms : IBankAccountTerms
     public PosOnlyMoney UnreliableClientLimit { get; }
 
     public IReadOnlyCollection<DepositChangeRate> DepositAccountTermsList => _depositChangeRates.AsReadOnly();
+
+    public Percent GetPercentForConcreteBalance(PosOnlyMoney balance)
+    {
+        for (int i = 0; i < _depositChangeRates.Count - 1; i++)
+        {
+            if (_depositChangeRates[i].Threshold.Value < balance.Value
+                && balance.Value < _depositChangeRates[i + 1].Threshold.Value)
+                return _depositChangeRates[i].Percent;
+        }
+
+        return _depositChangeRates.Last().Percent;
+    }
 
     public static DepositAccountTermsBuilder Builder() => new DepositAccountTermsBuilder();
 

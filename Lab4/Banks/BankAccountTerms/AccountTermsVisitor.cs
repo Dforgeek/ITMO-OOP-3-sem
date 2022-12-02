@@ -1,7 +1,6 @@
-﻿using Banks.Interfaces;
-using Banks.Models;
+﻿using Banks.BankAccounts;
 
-namespace Banks.Entities;
+namespace Banks.BankAccountTerms;
 
 public class AccountTermsVisitor : IAccountTermsVisitor
 {
@@ -20,16 +19,19 @@ public class AccountTermsVisitor : IAccountTermsVisitor
 
     public CreditAccountTerms CreateAccountTerms(CreditAccount creditAccount)
     {
-        throw new NotImplementedException();
+        creditAccount.UpdateTerms(CreditAccountTerms);
+        return CreditAccountTerms;
     }
 
     public DebitAccountTerms CreateAccountTerms(DebitAccount debitAccount)
     {
-        throw new NotImplementedException();
+        debitAccount.UpdateTerms(DebitAccountTerms);
+        return DebitAccountTerms;
     }
 
     public DepositAccountTerms CreateAccountTerms(DepositAccount depositAccount)
     {
-        throw new NotImplementedException();
+        depositAccount.UpdateTerms(DepositAccountTerms);
+        return DepositAccountTerms;
     }
 }

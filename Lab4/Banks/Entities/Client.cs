@@ -1,13 +1,14 @@
 ﻿using Banks.Entities;
-using Banks.Interfaces;
+using Banks.Notifications;
+using Banks.ValueObjects;
 
-namespace Banks.Models;
+namespace Banks.Entities;
 
 public class Client
 {
     private readonly List<INotificationStrategy> _notificationStrategies;
 
-    private Client(string name, string surname, string? address, string? passport)
+    private Client(string name, string surname, string? address, Passport? passport)
     {
         Name = name;
         Surname = surname;
@@ -24,7 +25,7 @@ public class Client
 
     public string? Address { get; }
 
-    public string? Passport { get; }
+    public Passport? Passport { get; }
 
     public static ClientBuilder Builder() => new ClientBuilder();
 
@@ -32,19 +33,23 @@ public class Client
     {
         if (_notificationStrategies.Contains(newWayToNotify))
             throw new Exception();
+
         _notificationStrategies.Add(newWayToNotify);
     }
 
-    public void GetNotification()
+    public void GetNotification(string message)
     {
-        
+        foreach (INotificationStrategy notificationStrategy in _notificationStrategies)
+        {
+            notificationStrategy.Notify(this, message);
+        }
     }
 
     public class ClientBuilder
     {
         private string? _name;
         private string? _surname;
-        private string? _passport;
+        private Passport? _passport;
         private string? _address;
 
         public ClientBuilder()
@@ -64,6 +69,7 @@ public class Client
         {
             if (_name == null || _surname == null)
                 throw new Exception();
+
             return new Client(_name, _surname, _address, _passport);
         }
 
@@ -79,14 +85,13 @@ public class Client
         {
             if (string.IsNullOrWhiteSpace(surname))
                 throw new Exception();
+
             _surname = surname;
             return this;
         }
 
-        public ClientBuilder SetPassport(string passport)
+        public ClientBuilder SetPassport(Passport passport)
         {
-            if (string.IsNullOrWhiteSpace(_surname))
-                throw new Exception();
             _passport = passport;
             return this;
         }
@@ -95,6 +100,7 @@ public class Client
         {
             if (string.IsNullOrWhiteSpace(address))
                 throw new Exception();
+
             _address = address;
             return this;
         }

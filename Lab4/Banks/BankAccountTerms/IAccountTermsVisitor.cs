@@ -1,7 +1,6 @@
-﻿using Banks.Entities;
-using Banks.Models;
+﻿using Banks.BankAccounts;
 
-namespace Banks.Interfaces;
+namespace Banks.BankAccountTerms;
 
 public interface IAccountTermsVisitor
 {

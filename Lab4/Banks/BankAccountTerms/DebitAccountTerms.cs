@@ -1,6 +1,6 @@
-﻿using Banks.Interfaces;
+﻿using Banks.ValueObjects;
 
-namespace Banks.Models;
+namespace Banks.BankAccountTerms;
 
 public class DebitAccountTerms : IBankAccountTerms
 {

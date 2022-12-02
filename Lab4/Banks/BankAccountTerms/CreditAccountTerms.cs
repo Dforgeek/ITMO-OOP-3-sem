@@ -1,10 +1,10 @@
-﻿using Banks.Interfaces;
+﻿using Banks.ValueObjects;
 
-namespace Banks.Models;
+namespace Banks.BankAccountTerms;
 
 public class CreditAccountTerms : IBankAccountTerms
 {
-    public CreditAccountTerms(PosOnlyMoney unreliableClientLimit, PosNegMoney creditLimit, Percent commission)
+    public CreditAccountTerms(PosOnlyMoney unreliableClientLimit, PosNegMoney creditLimit, PosOnlyMoney commission)
     {
         UnreliableClientLimit = unreliableClientLimit;
         CreditLimit = creditLimit;
@@ -15,5 +15,5 @@ public class CreditAccountTerms : IBankAccountTerms
 
     public PosNegMoney CreditLimit { get; }
 
-    public Percent Commission { get; }
+    public PosOnlyMoney Commission { get; }
 }

@@ -1,8 +1,7 @@
 ﻿using Banks.Entities;
-using Banks.Interfaces;
-using Banks.Models;
+using Banks.ValueObjects;
 
-namespace Banks.Services;
+namespace Banks.BankServices;
 
 public class CentralBank
 {
@@ -17,6 +16,6 @@ public class CentralBank
 
     public Bank Createbank(string name, PosNegMoney transferLimit)
     {
-        return new Bank(name, transferLimit);
+        throw new NotImplementedException();
     }
 }

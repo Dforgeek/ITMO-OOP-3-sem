@@ -1,13 +1,12 @@
-﻿using Banks.Interfaces;
+﻿namespace Banks.ValueObjects;
 
-namespace Banks.Models;
-
-public class PosOnlyMoney : IMoney
+public record PosOnlyMoney : IMoney
 {
     public PosOnlyMoney(decimal value)
     {
         if (value < 0)
             throw new Exception();
+
         Value = value;
     }
 

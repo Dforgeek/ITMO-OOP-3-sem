@@ -1,4 +1,4 @@
-﻿namespace Banks.Interfaces;
+﻿namespace Banks.ValueObjects;
 
 public interface IMoney
 {

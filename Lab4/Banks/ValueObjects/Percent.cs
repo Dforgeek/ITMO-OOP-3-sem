@@ -1,11 +1,13 @@
-﻿namespace Banks.Models;
+﻿namespace Banks.ValueObjects;
 
-public class Percent
+public record Percent
 {
     public Percent(decimal value)
     {
         if (value < 0)
             throw new Exception();
+
+        Value = value;
     }
 
     public decimal GetInCoefficientForm => Value / 100;

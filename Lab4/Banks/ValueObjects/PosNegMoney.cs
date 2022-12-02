@@ -1,6 +1,4 @@
-﻿using Banks.Interfaces;
-
-namespace Banks.Models;
+﻿namespace Banks.ValueObjects;
 
 public record PosNegMoney : IMoney
 {
@@ -11,5 +9,6 @@ public record PosNegMoney : IMoney
     }
 
     public bool IsNegative { get; }
+
     public decimal Value { get; }
 }

@@ -1,4 +1,6 @@
-﻿namespace Banks.Models;
+﻿using Banks.ValueObjects;
+
+namespace Banks.BankAccountTerms;
 
 public record DepositChangeRate
 {
@@ -11,4 +13,9 @@ public record DepositChangeRate
     public PosOnlyMoney Threshold { get; }
 
     public Percent Percent { get; }
+
+    public override string ToString()
+    {
+        return $"Threshold: {Threshold.Value}, Percent per annum: {Percent.Value}%";
+    }
 }

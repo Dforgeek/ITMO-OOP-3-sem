@@ -1,6 +1,6 @@
-﻿using Banks.Models;
+﻿using Banks.ValueObjects;
 
-namespace Banks.Interfaces;
+namespace Banks.BankAccountTerms;
 
 public interface IBankAccountTerms
 {
