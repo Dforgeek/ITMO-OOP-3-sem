@@ -21,6 +21,8 @@ public record DepositAccountTerms : IBankAccountTerms
 
     public Percent GetPercentForConcreteBalance(PosOnlyMoney balance)
     {
+        if (_depositChangeRates[0].Threshold.Value > balance.Value)
+            return new Percent(0);
         for (int i = 0; i < _depositChangeRates.Count - 1; i++)
         {
             if (_depositChangeRates[i].Threshold.Value < balance.Value

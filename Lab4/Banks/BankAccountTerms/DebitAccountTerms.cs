@@ -4,9 +4,9 @@ namespace Banks.BankAccountTerms;
 
 public class DebitAccountTerms : IBankAccountTerms
 {
-    public DebitAccountTerms(PosOnlyMoney limit, Percent percentPerAnnum)
+    public DebitAccountTerms(PosOnlyMoney unreliableClientLimit, Percent percentPerAnnum)
     {
-        UnreliableClientLimit = limit;
+        UnreliableClientLimit = unreliableClientLimit;
         PercentPerAnnum = percentPerAnnum;
     }
 

@@ -14,13 +14,13 @@ public class CentralBank
 {
     private readonly List<Client> _clients;
     private readonly List<Bank> _banks;
-    private ClockSimulation _clockSimulation;
+    private IClock _clockSimulation;
 
-    public CentralBank()
+    public CentralBank(IClock clock)
     {
         _banks = new List<Bank>();
         _clients = new List<Client>();
-        _clockSimulation = new ClockSimulation();
+        _clockSimulation = clock;
     }
 
     public IReadOnlyCollection<Bank> Banks => _banks.AsReadOnly();
@@ -128,7 +128,7 @@ public class CentralBank
             bank.UpdateAllAccruals();
         }
 
-        if (_clockSimulation.Now.Month <= before.Month) return;
+        if (_clockSimulation.Now.Day != 1) return;
         foreach (Bank bank in _banks)
         {
             bank.WriteOffAllAccruals();
@@ -137,7 +137,7 @@ public class CentralBank
 
     public void PassOneMonth()
     {
-        for (int i = 0; i < 28; i++)
+        for (int i = 0; i < 32; i++)
         {
             PassOneDay();
         }

@@ -2,9 +2,9 @@
 
 public class ClockSimulation : IClock
 {
-    public ClockSimulation()
+    public ClockSimulation(DateTime dateTime)
     {
-        Now = DateTime.Now;
+        Now = dateTime;
     }
 
     public DateTime Now { get; private set; }
