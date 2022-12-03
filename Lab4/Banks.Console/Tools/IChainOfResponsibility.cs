@@ -2,4 +2,7 @@
 
 public interface IChainOfResponsibility
 {
+    IChainOfResponsibility? NextChainElement { get; set; }
+
+    void Handle();
 }

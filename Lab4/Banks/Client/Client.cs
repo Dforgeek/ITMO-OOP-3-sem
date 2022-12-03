@@ -75,7 +75,7 @@ public class Client : IEquatable<Client>
 
         public Client Build()
         {
-            if (_name == null || _surname == null || _id == Guid.Empty)
+            if (_name == null || _surname == null)
                 throw new Exception();
 
             return new Client(_id, _name, _surname, _address, _passport);
