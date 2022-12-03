@@ -1,6 +1,9 @@
 ﻿using Banks.BankAccountTerms;
 using Banks.BankServices;
 using Banks.Entities;
+using Banks.Notifications;
+using Banks.TimeManagement;
+using Banks.Transactions;
 using Banks.ValueObjects;
 
 namespace Banks.BankAccounts;
@@ -13,19 +16,19 @@ public interface IBankAccount
 
     Client Client { get; }
 
-    bool GetNotified { get; set; }
+    TransferTransaction Transfer(IBankAccount toAcc, PosOnlyMoney transferValue, DateTime dateTime);
 
-    TransactionLog Transfer(IBankAccount toAcc, PosOnlyMoney transferValue, DateTime dateTime);
+    ReplenishTransaction Replenish(PosOnlyMoney money, DateTime dateTime);
 
-    void AddMoney(PosOnlyMoney money);
+    WithdrawTransaction Withdraw(PosOnlyMoney money, DateTime dateTime);
 
-    void RemoveMoney(PosOnlyMoney money);
-
-    void UndoTransactionConsequences(TransactionLog transactionLog);
+    void UndoTransactionConsequences(TransferTransaction transferTransaction, DateTime dateTime);
 
     void UpdateAccruals();
 
-    void WriteOffAccruals();
+    void WriteOffAccruals(DateTime dateTime);
+
+    void AddNewNotificationStrategy(INotificationStrategy notificationStrategy);
 
     void AcceptVisitor(IAccountTermsVisitor termsVisitor);
 }

@@ -1,6 +1,10 @@
-﻿using Banks.BankAccountTerms;
+﻿using System.Runtime.CompilerServices;
+using Banks.BankAccountTerms;
 using Banks.BankServices;
 using Banks.Entities;
+using Banks.Notifications;
+using Banks.TimeManagement;
+using Banks.Transactions;
 using Banks.ValueObjects;
 
 namespace Banks.BankAccounts;
@@ -8,6 +12,7 @@ namespace Banks.BankAccounts;
 public class CreditAccount : IBankAccount
 {
     private decimal _sumOfCommission;
+    private List<INotificationStrategy> _notificationStrategies;
 
     public CreditAccount(Bank bank, Client client, IMoney money, Guid id, CreditAccountTerms? creditAccTerms = null)
     {
@@ -17,6 +22,7 @@ public class CreditAccount : IBankAccount
         Id = id;
         CreditAccountTerms = creditAccTerms;
         _sumOfCommission = 0;
+        _notificationStrategies = new List<INotificationStrategy>();
     }
 
     public Guid Id { get; }
@@ -25,34 +31,99 @@ public class CreditAccount : IBankAccount
 
     public Client Client { get; }
 
-    public bool GetNotified { get; set; }
-
     public PosNegMoney Balance { get; private set; }
 
     public CreditAccountTerms? CreditAccountTerms { get; private set; }
 
-    public TransactionLog Transfer(IBankAccount toAcc, PosOnlyMoney transferValue, DateTime dateTime)
+    public TransferTransaction Transfer(IBankAccount toAcc, PosOnlyMoney transferValue, DateTime dateTime)
     {
         if (CreditAccountTerms == null)
             throw new Exception();
 
-        RemoveMoney(transferValue);
-        toAcc.AddMoney(transferValue);
-        var log = new TransactionLog(this, toAcc, transferValue, CreditAccountTerms, dateTime);
+        Withdraw(transferValue, dateTime);
+        toAcc.Replenish(transferValue, dateTime);
+
+        var log = new TransferTransaction(this, toAcc, transferValue, CreditAccountTerms, dateTime, Guid.NewGuid());
         return log;
     }
 
-    public void AddMoney(PosOnlyMoney money)
+    public ReplenishTransaction Replenish(PosOnlyMoney money, DateTime dateTime)
     {
         Balance = new PosNegMoney(Balance.Value + money.Value);
+        return new ReplenishTransaction(this, money, dateTime, Guid.NewGuid());
     }
 
-    public void RemoveMoney(PosOnlyMoney money)
+    public WithdrawTransaction Withdraw(PosOnlyMoney money, DateTime dateTime)
+    {
+        ValidateAndDecrease(money);
+
+        return new WithdrawTransaction(this, money, dateTime, Guid.NewGuid());
+    }
+
+    public void UndoTransactionConsequences(TransferTransaction transferTransaction, DateTime dateTime)
+    {
+        if (transferTransaction.Terms is not CreditAccountTerms creditAccountTerms)
+            throw new Exception();
+
+        if (Equals(transferTransaction.FromAccount))
+        {
+            _sumOfCommission -= creditAccountTerms.Commission.Value;
+            return;
+        }
+
+        if (Equals(transferTransaction.ToAccount))
+        {
+            _sumOfCommission += creditAccountTerms.Commission.Value;
+            return;
+        }
+
+        throw new Exception();
+    }
+
+    public void UpdateAccruals()
+    {
+    }
+
+    public void WriteOffAccruals(DateTime dateTime)
+    {
+        Withdraw(new PosOnlyMoney(_sumOfCommission), dateTime);
+        _sumOfCommission = 0;
+    }
+
+    public void AddNewNotificationStrategy(INotificationStrategy notificationStrategy)
+    {
+        if (_notificationStrategies.Contains(notificationStrategy))
+            throw new Exception();
+
+        _notificationStrategies.Add(notificationStrategy);
+    }
+
+    public void UpdateTerms(CreditAccountTerms creditAccountTerms)
+    {
+        if (creditAccountTerms.Equals(CreditAccountTerms))
+            return;
+
+        CreditAccountTerms = creditAccountTerms;
+
+        string message = GetMessageForNotify(creditAccountTerms);
+
+        foreach (INotificationStrategy notificationStrategy in _notificationStrategies)
+        {
+            notificationStrategy.Notify(Client, message);
+        }
+    }
+
+    public void AcceptVisitor(IAccountTermsVisitor termsVisitor)
+    {
+        termsVisitor.CreateAccountTerms(this);
+    }
+
+    private void ValidateAndDecrease(PosOnlyMoney money)
     {
         if (CreditAccountTerms == null)
             throw new Exception();
 
-        if (!TransferValidation(money))
+        if (!UnreliableLimitValidation(money))
             throw new Exception();
 
         decimal newBalance = Balance.Value - money.Value;
@@ -66,49 +137,19 @@ public class CreditAccount : IBankAccount
         Balance = new PosNegMoney(Balance.Value - money.Value);
     }
 
-    public void UndoTransactionConsequences(TransactionLog transactionLog)
-    {
-        if (transactionLog.Terms is not CreditAccountTerms creditAccountTerms)
-            throw new Exception();
-
-        _sumOfCommission -= creditAccountTerms.Commission.Value;
-    }
-
-    public void UpdateAccruals()
-    {
-    }
-
-    public void WriteOffAccruals()
-    {
-        Balance = new PosNegMoney(Balance.Value - _sumOfCommission);
-        _sumOfCommission = 0;
-    }
-
-    public void UpdateTerms(CreditAccountTerms creditAccountTerms)
-    {
-        if (creditAccountTerms.Equals(CreditAccountTerms))
-            return;
-
-        CreditAccountTerms = creditAccountTerms;
-        if (GetNotified)
-        {
-            Client.GetNotification($"We have updated our credit accounts terms:" +
-                                   $" \n New commission for transactions with negative balance: {creditAccountTerms.Commission} " +
-                                   $"\n New credit limit:{creditAccountTerms.CreditLimit}" +
-                                   $"\n New limit for unreliable clients: {creditAccountTerms.UnreliableClientLimit}");
-        }
-    }
-
-    public void AcceptVisitor(IAccountTermsVisitor termsVisitor)
-    {
-        termsVisitor.CreateAccountTerms(this);
-    }
-
-    private bool TransferValidation(IMoney transferValue)
+    private bool UnreliableLimitValidation(IMoney transferValue)
     {
         if (CreditAccountTerms == null)
             throw new Exception();
 
         return Client.Verified || transferValue.Value < CreditAccountTerms.UnreliableClientLimit.Value;
+    }
+
+    private string GetMessageForNotify(CreditAccountTerms creditAccountTerms)
+    {
+        return "We have updated our credit accounts terms:" +
+               $" \n New commission for transactions with negative balance: {creditAccountTerms.Commission} " +
+               $"\n New credit limit:{creditAccountTerms.CreditLimit}" +
+               $"\n New limit for unreliable clients: {creditAccountTerms.UnreliableClientLimit}";
     }
 }

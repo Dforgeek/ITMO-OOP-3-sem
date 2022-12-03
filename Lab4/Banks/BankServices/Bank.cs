@@ -1,7 +1,9 @@
 ﻿using Banks.BankAccounts;
 using Banks.BankAccountTerms;
 using Banks.Entities;
+using Banks.Notifications;
 using Banks.TimeManagement;
+using Banks.Transactions;
 using Banks.ValueObjects;
 
 namespace Banks.BankServices;
@@ -9,24 +11,30 @@ namespace Banks.BankServices;
 public class Bank : IBank
 {
     private readonly List<IBankAccount> _bankAccounts;
-    private readonly List<TransactionLog> _transactionLogs;
+    private readonly List<ITransaction> _transactions;
 
-    public Bank(string name, IAccountTermsVisitor accountTermsVisitor)
+    public Bank(string name, IClock clock, IAccountTermsVisitor accountTermsVisitor, Guid id)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new Exception();
 
         Name = name;
+        Clock = clock;
+        Id = id;
         _bankAccounts = new List<IBankAccount>();
-        _transactionLogs = new List<TransactionLog>();
+        _transactions = new List<ITransaction>();
         AccountTermsVisitor = accountTermsVisitor;
     }
 
     public string Name { get; }
 
+    public IClock Clock { get; }
+
+    public Guid Id { get; }
+
     public IReadOnlyCollection<IBankAccount> BankAccounts => _bankAccounts.AsReadOnly();
 
-    public IReadOnlyCollection<TransactionLog> TransactionLogs => _transactionLogs.AsReadOnly();
+    public IReadOnlyCollection<ITransaction> Transactions => _transactions.AsReadOnly();
 
     public IAccountTermsVisitor AccountTermsVisitor { get; private set; }
 
@@ -35,29 +43,42 @@ public class Bank : IBank
         return _bankAccounts.FirstOrDefault(ba => ba.Id == bankAccountId) ?? throw new Exception();
     }
 
-    public TransactionLog InBankTransfer(Guid fromAccountId, Guid toAccountId, PosOnlyMoney money, IClock clock)
+    public ITransaction GetTransaction(Guid transactionId)
     {
-        IBankAccount from = GetBankAccount(fromAccountId);
-        IBankAccount to = GetBankAccount(toAccountId);
-        TransactionLog transactionLog = from.Transfer(to, money, clock.Now);
-        _transactionLogs.Add(transactionLog);
-        return transactionLog;
+        return _transactions.FirstOrDefault(tr => tr.Id == transactionId) ?? throw new Exception();
     }
 
-    public void UndoInBankTransfer(TransactionLog transactionLog, IClock clock)
+    public WithdrawTransaction Withdraw(Guid bankAccountId, PosOnlyMoney money)
     {
-        if (transactionLog.Cancelled)
-            return;
+        WithdrawTransaction transaction = GetBankAccount(bankAccountId).Withdraw(money, Clock.Now);
+        _transactions.Add(transaction);
+        return transaction;
+    }
 
-        IBankAccount from = transactionLog.FromAccount;
-        IBankAccount to = transactionLog.ToAccount;
+    public ReplenishTransaction Replenish(Guid bankAccountId, PosOnlyMoney money)
+    {
+        ReplenishTransaction transaction = GetBankAccount(bankAccountId).Replenish(money, Clock.Now);
+        _transactions.Add(transaction);
+        return transaction;
+    }
 
-        TransactionLog cancelling = to.Transfer(from, transactionLog.TransferValue, clock.Now);
-        to.UndoTransactionConsequences(cancelling);
-        from.UndoTransactionConsequences(transactionLog);
+    public TransferTransaction Transfer(Guid fromAccountId, IBankAccount toAcc, PosOnlyMoney money)
+    {
+        IBankAccount from = GetBankAccount(fromAccountId);
 
-        transactionLog.CancelTransaction();
-        _transactionLogs.Add(cancelling);
+        TransferTransaction transferTransaction = from.Transfer(toAcc, money, Clock.Now);
+
+        _transactions.Add(transferTransaction);
+
+        return transferTransaction;
+    }
+
+    public ITransaction UndoInBankTransfer(ITransaction transferTransaction)
+    {
+        var undoVisitor = new UndoTransactionVisitor(Clock.Now);
+        ITransaction cancelling = transferTransaction.Accept(undoVisitor);
+        _transactions.Add(cancelling);
+        return cancelling;
     }
 
     public IBankAccount CreateBankAccount(IBankAccountFactory bankAccountFactory, Client client, IMoney money)
@@ -81,7 +102,7 @@ public class Bank : IBank
     {
         foreach (IBankAccount bankAccount in _bankAccounts)
         {
-            bankAccount.WriteOffAccruals();
+            bankAccount.WriteOffAccruals(Clock.Now);
         }
     }
 
@@ -95,13 +116,8 @@ public class Bank : IBank
         }
     }
 
-    public void TurnOnNotifications(Guid accountId)
+    public void SubscribeToNotifications(Guid accountId, INotificationStrategy notificationStrategy)
     {
-        GetBankAccount(accountId).GetNotified = true;
-    }
-
-    public void TurnOffNotifications(Guid accountId)
-    {
-        GetBankAccount(accountId).GetNotified = false;
+        GetBankAccount(accountId).AddNewNotificationStrategy(notificationStrategy);
     }
 }

@@ -1,6 +1,9 @@
 ﻿using Banks.BankAccountTerms;
 using Banks.BankServices;
 using Banks.Entities;
+using Banks.Notifications;
+using Banks.TimeManagement;
+using Banks.Transactions;
 using Banks.ValueObjects;
 
 namespace Banks.BankAccounts;
@@ -9,6 +12,7 @@ public class DebitAccount : IBankAccount
 {
     private const int DaysInYear = 365;
     private decimal _sumOfPercentsPerAnnum;
+    private List<INotificationStrategy> _notificationStrategies;
 
     public DebitAccount(Bank bank, Client client, IMoney money, Guid id, DebitAccountTerms? debitAccountTerms = null)
     {
@@ -16,8 +20,9 @@ public class DebitAccount : IBankAccount
         Bank = bank;
         Client = client;
         Id = id;
-        _sumOfPercentsPerAnnum = 0;
         DebitAccountTerms = debitAccountTerms;
+        _sumOfPercentsPerAnnum = 0;
+        _notificationStrategies = new List<INotificationStrategy>();
     }
 
     public Guid Id { get; }
@@ -26,38 +31,59 @@ public class DebitAccount : IBankAccount
 
     public Client Client { get; }
 
-    public bool GetNotified { get; set; }
-
     public PosOnlyMoney Balance { get; private set; }
 
     public DebitAccountTerms? DebitAccountTerms { get; private set; }
 
-    public TransactionLog Transfer(IBankAccount toAcc, PosOnlyMoney transferValue, DateTime dateTime)
+    public TransferTransaction Transfer(IBankAccount toAcc, PosOnlyMoney transferValue, DateTime dateTime)
     {
         if (DebitAccountTerms == null)
             throw new Exception();
 
-        RemoveMoney(transferValue);
-        toAcc.RemoveMoney(transferValue);
-        var log = new TransactionLog(this, toAcc, transferValue, DebitAccountTerms, dateTime);
-        return log;
+        Withdraw(transferValue, dateTime);
+        toAcc.Replenish(transferValue, dateTime);
+
+        return new TransferTransaction(this, toAcc, transferValue, DebitAccountTerms, dateTime, Guid.NewGuid());
     }
 
-    public void AddMoney(PosOnlyMoney money)
+    public ReplenishTransaction Replenish(PosOnlyMoney money, DateTime dateTime)
     {
         Balance = new PosOnlyMoney(Balance.Value + money.Value);
+        return new ReplenishTransaction(this, money, dateTime, Guid.NewGuid());
     }
 
-    public void RemoveMoney(PosOnlyMoney money)
+    public WithdrawTransaction Withdraw(PosOnlyMoney money, DateTime dateTime)
     {
         if (!TransferValidation(money))
             throw new Exception();
 
         Balance = new PosOnlyMoney(Balance.Value - money.Value);
+        return new WithdrawTransaction(this, money, dateTime, Guid.NewGuid());
     }
 
-    public void UndoTransactionConsequences(TransactionLog transactionLog)
+    public void UndoTransactionConsequences(TransferTransaction transferTransaction, DateTime dateTime)
     {
+        if (DebitAccountTerms == null)
+            throw new Exception();
+
+        TimeSpan timeSpan = dateTime - transferTransaction.DateTime;
+        int days = timeSpan.Days;
+
+        if (Equals(transferTransaction.FromAccount))
+        {
+            _sumOfPercentsPerAnnum += days * transferTransaction.TransferValue.Value *
+                DebitAccountTerms.PercentPerAnnum.GetInCoefficientForm / DaysInYear;
+            return;
+        }
+
+        if (Equals(transferTransaction.ToAccount))
+        {
+            _sumOfPercentsPerAnnum -= days * transferTransaction.TransferValue.Value *
+                DebitAccountTerms.PercentPerAnnum.GetInCoefficientForm / DaysInYear;
+            return;
+        }
+
+        throw new Exception();
     }
 
     public void UpdateAccruals()
@@ -69,10 +95,18 @@ public class DebitAccount : IBankAccount
             Balance.Value * (DebitAccountTerms.PercentPerAnnum.GetInCoefficientForm / DaysInYear);
     }
 
-    public void WriteOffAccruals()
+    public void WriteOffAccruals(DateTime dateTime)
     {
-        AddMoney(new PosOnlyMoney(_sumOfPercentsPerAnnum));
+        Replenish(new PosOnlyMoney(_sumOfPercentsPerAnnum), dateTime);
         _sumOfPercentsPerAnnum = 0;
+    }
+
+    public void AddNewNotificationStrategy(INotificationStrategy notificationStrategy)
+    {
+        if (_notificationStrategies.Contains(notificationStrategy))
+            throw new Exception();
+
+        _notificationStrategies.Add(notificationStrategy);
     }
 
     public void UpdateTerms(DebitAccountTerms debitAccountTerms)
@@ -81,11 +115,10 @@ public class DebitAccount : IBankAccount
             throw new Exception();
 
         DebitAccountTerms = debitAccountTerms;
-        if (GetNotified)
+        string message = GetMessageForNotify(debitAccountTerms);
+        foreach (INotificationStrategy notificationStrategy in _notificationStrategies)
         {
-            Client.GetNotification($"We have updated our debit accounts terms:" +
-                                   $" \n New percent per annum: {debitAccountTerms.PercentPerAnnum}" +
-                                   $"\n New limit for unreliable clients: {debitAccountTerms.UnreliableClientLimit}");
+            notificationStrategy.Notify(Client, message);
         }
     }
 
@@ -100,5 +133,12 @@ public class DebitAccount : IBankAccount
             throw new Exception();
 
         return Client.Verified || transferValue.Value < DebitAccountTerms.UnreliableClientLimit.Value;
+    }
+
+    private string GetMessageForNotify(DebitAccountTerms debitAccountTerms)
+    {
+        return "We have updated our debit accounts terms:" +
+               $" \n New percent per annum: {debitAccountTerms.PercentPerAnnum}" +
+               $"\n New limit for unreliable clients: {debitAccountTerms.UnreliableClientLimit}";
     }
 }

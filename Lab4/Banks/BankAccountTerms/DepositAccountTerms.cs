@@ -6,15 +6,18 @@ public record DepositAccountTerms : IBankAccountTerms
 {
     private readonly List<DepositChangeRate> _depositChangeRates;
 
-    private DepositAccountTerms(PosOnlyMoney unreliableClientLimit, List<DepositChangeRate> depositChangeRates)
+    private DepositAccountTerms(PosOnlyMoney unreliableClientLimit, TimeSpan timeSpan, List<DepositChangeRate> depositChangeRates)
     {
         UnreliableClientLimit = unreliableClientLimit;
         _depositChangeRates = depositChangeRates;
+        WithdrawUnavailableTimeSpan = timeSpan;
     }
 
     public PosOnlyMoney UnreliableClientLimit { get; }
 
     public IReadOnlyCollection<DepositChangeRate> DepositAccountTermsList => _depositChangeRates.AsReadOnly();
+
+    public TimeSpan WithdrawUnavailableTimeSpan { get; }
 
     public Percent GetPercentForConcreteBalance(PosOnlyMoney balance)
     {
@@ -34,11 +37,13 @@ public record DepositAccountTerms : IBankAccountTerms
     {
         private PosOnlyMoney? _unreliableClientLimit;
         private List<DepositChangeRate> _changeRates;
+        private TimeSpan _timeSpan;
 
         public DepositAccountTermsBuilder()
         {
             _changeRates = new List<DepositChangeRate>();
             _unreliableClientLimit = null;
+            _timeSpan = TimeSpan.Zero;
         }
 
         public void SetLimit(PosOnlyMoney limit)
@@ -46,22 +51,28 @@ public record DepositAccountTerms : IBankAccountTerms
             _unreliableClientLimit = limit;
         }
 
-        public void AddDepositChangeRate(DepositChangeRate depositChangeRate)
+        public void AddDepositChangeRate(PosOnlyMoney threshold, Percent percent)
         {
-            _changeRates.Add(depositChangeRate);
+            _changeRates.Add(new DepositChangeRate(threshold, percent));
+        }
+
+        public void AddWithdrawUnavailableTimeSpan(TimeSpan timeSpan)
+        {
+            _timeSpan = timeSpan;
         }
 
         public void Reset()
         {
             _changeRates = new List<DepositChangeRate>();
             _unreliableClientLimit = null;
+            _timeSpan = TimeSpan.Zero;
         }
 
         public DepositAccountTerms Build()
         {
-            if (_unreliableClientLimit == null)
+            if (_unreliableClientLimit == null || _timeSpan == TimeSpan.Zero)
                 throw new Exception();
-            var newDepositAccountTerms = new DepositAccountTerms(_unreliableClientLimit, _changeRates);
+            var newDepositAccountTerms = new DepositAccountTerms(_unreliableClientLimit, _timeSpan, _changeRates);
             Reset();
             return newDepositAccountTerms;
         }

@@ -1,23 +1,27 @@
 ﻿using Banks.BankAccounts;
 using Banks.BankAccountTerms;
+using Banks.ValueObjects;
 
-namespace Banks.ValueObjects;
+namespace Banks.Transactions;
 
-public class TransactionLog
+public class TransferTransaction : ITransaction
 {
-    public TransactionLog(IBankAccount fromAcc, IBankAccount toAcc, PosOnlyMoney transferValue, IBankAccountTerms terms, DateTime dateTime)
+    public TransferTransaction(IBankAccount fromAcc, IBankAccount toAcc, PosOnlyMoney transferValue, IBankAccountTerms terms, DateTime dateTime, Guid id)
     {
         TransferValue = transferValue;
         ToAccount = toAcc;
         FromAccount = fromAcc;
         DateTime = dateTime;
         Terms = terms;
+        Id = id;
         Cancelled = false;
     }
 
     public IBankAccount ToAccount { get; }
 
     public IBankAccount FromAccount { get; }
+
+    public Guid Id { get; }
 
     public PosOnlyMoney TransferValue { get; }
 
@@ -30,5 +34,10 @@ public class TransactionLog
     public void CancelTransaction()
     {
         Cancelled = true;
+    }
+
+    public ITransaction Accept(ITransactionVisitor visitor)
+    {
+        return visitor.Visit(this);
     }
 }
